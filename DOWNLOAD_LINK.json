@@ -1,8 +1,73 @@
 {
-  "version": "v2.0.3",
-  "fileName": "ocr-card-recognizer-windows-standard-v2.1.2.tar.gz",
-  "fileKey": "ocr-card-recognizer-windows-standard-v2.1.2.tar_eeabb12d.gz",
-  "downloadUrl": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-standard-v2.1.2.tar_eeabb12d.gz?sign=1770806399-d52e7d73d3-0-d312ea1ced43b6a69ae200ec0f357a41b650d7d74234af0b594807490198098f",
-  "uploadTime": "2026-02-04T10:39:59.847Z",
-  "expiresAt": "2026-02-11T10:39:59.847Z"
+  "latest": "v2.1.3",
+  "versions": {
+    "v2.1.3": {
+      "version": "v2.1.3",
+      "releaseDate": "2026-02-04T11:24:21.652Z",
+      "fileName": "ocr-card-recognizer-windows-v2.1.3.tar.gz",
+      "fileKey": "ocr-card-recognizer-windows-v2.1.3.tar_fbb696ab.gz",
+      "downloadUrl": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.3.tar_fbb696ab.gz?sign=1772796261-df39060e4b-0-7dfb925b121db795a26be418a40b56212de668b11cbeda9c68b5864afa690b8c",
+      "fileSize": 134367,
+      "fileSizeHuman": "132 KB",
+      "description": "OCR Card Recognizer - Windows Deployment Package with all fixes",
+      "changes": [
+        "Fixed Python environment conflict on Windows",
+        "Fixed Tailwind CSS styling issues (downgraded to 3.4.19)",
+        "Fixed Windows environment variable syntax",
+        "All dependencies updated and tested"
+      ],
+      "status": "stable",
+      "expiresIn": "2592000"
+    },
+    "v2.1.2": {
+      "version": "v2.1.2",
+      "releaseDate": "2026-02-04T10:39:59.847Z",
+      "fileName": "ocr-card-recognizer-windows-standard-v2.1.2.tar.gz",
+      "fileKey": "ocr-card-recognizer-windows-standard-v2.1.2.tar_eeabb12d.gz",
+      "downloadUrl": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-standard-v2.1.2.tar_eeabb12d.gz?sign=1770806399-d52e7d73d3-0-d312ea1ced43b6a69ae200ec0f357a41b650d7d74234af0b594807490198098f",
+      "fileSize": 131072,
+      "fileSizeHuman": "128 KB",
+      "description": "OCR Card Recognizer - Windows Standard Deployment Package",
+      "changes": [
+        "Added complete deployment scripts",
+        "Fixed Windows batch file encoding issues",
+        "Added dependency checking"
+      ],
+      "status": "deprecated",
+      "expiresIn": 604800
+    }
+  },
+  "quickStart": {
+    "download": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.3.tar_fbb696ab.gz?sign=1772796261-df39060e4b-0-7dfb925b121db795a26be418a40b56212de668b11cbeda9c68b5864afa690b8c",
+    "extract": "Extract the .tar.gz file",
+    "install": {
+      "backend": "cd backend && py -m pip install -r requirements.txt",
+      "frontend": "cd .. && pnpm install && pnpm run build"
+    },
+    "start": {
+      "backend": "cd backend && py -m uvicorn main:app --host 0.0.0.0 --port 8000",
+      "frontend": "cd .. && pnpm run start"
+    },
+    "access": "http://localhost:5000"
+  },
+  "requirements": {
+    "python": "3.12",
+    "nodejs": "18+",
+    "os": "Windows 10/11 (64-bit)",
+    "ram": "4GB (recommended 8GB)",
+    "disk": "2GB"
+  },
+  "features": [
+    "Offline OCR recognition using PaddleOCR",
+    "Template-based recognition for faster processing",
+    "Support for both OCR and barcode recognition",
+    "Batch image upload and processing",
+    "Excel export with password screenshots",
+    "Real-time preview and editing",
+    "Fixed Windows compatibility issues"
+  ],
+  "documentation": {
+    "detailed": "DOWNLOAD_v2.1.3.md",
+    "quick": "QUICKSTART_v2.1.3.md"
+  }
 }

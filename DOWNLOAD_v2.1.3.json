@@ -1,0 +1,15 @@
+{
+  "version": "v2.1.3",
+  "releaseDate": "2026-02-04T11:24:21.652Z",
+  "fileKey": "ocr-card-recognizer-windows-v2.1.3.tar_fbb696ab.gz",
+  "downloadUrl": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.3.tar_fbb696ab.gz?sign=1772796261-df39060e4b-0-7dfb925b121db795a26be418a40b56212de668b11cbeda9c68b5864afa690b8c",
+  "fileName": "ocr-card-recognizer-windows-v2.1.3.tar.gz",
+  "fileSize": 134367,
+  "description": "OCR Card Recognizer - Windows Deployment Package with all fixes",
+  "changes": [
+    "Fixed Python environment conflict on Windows",
+    "Fixed Tailwind CSS styling issues (downgraded to 3.4.19)",
+    "Fixed Windows environment variable syntax",
+    "All dependencies updated and tested"
+  ]
+}
