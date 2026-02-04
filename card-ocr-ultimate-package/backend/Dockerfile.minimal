@@ -1,0 +1,34 @@
+# 使用 Python 3.12 作为基础镜像
+FROM python:3.12-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 设置环境变量
+ENV PYTHONUNBUFFERED=1 \
+    PADDLE_NO_QUANT=1 \
+    PADDLE_SKIP_CXX_ABI_CHECK=1 \
+    PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
+    PIP_TRUSTED_HOST=pypi.tuna.tsinghua.edu.cn
+
+# 只安装最小必需的系统依赖（不使用 apt-get）
+# 使用 python:3.12-slim 镜像已经包含了大部分需要的库
+
+# 复制依赖文件
+COPY requirements.txt .
+
+# 安装 Python 依赖
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制应用代码
+COPY ocr_service.py .
+COPY main.py .
+
+# 创建必要的目录
+RUN mkdir -p /app/logs /app/models /root/.paddleocr
+
+# 暴露端口
+EXPOSE 8001
+
+# 启动命令
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "1"]
