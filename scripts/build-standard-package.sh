@@ -13,7 +13,7 @@ echo ""
 # Configuration
 deployDir="deploy/windows"
 packageName="ocr-card-recognizer-windows-standard"
-version="v2.0.3"
+version="v2.0.8"
 packageDir="package-temp"
 
 # Clean up temp directory
@@ -27,6 +27,7 @@ cp "$deployDir/install.bat" "$packageDir/" 2>/dev/null || echo "Warning: install
 cp "$deployDir/start.bat" "$packageDir/" 2>/dev/null || echo "Warning: start.bat not found"
 cp "$deployDir/stop.bat" "$packageDir/" 2>/dev/null || echo "Warning: stop.bat not found"
 cp "$deployDir/check.bat" "$packageDir/" 2>/dev/null || echo "Warning: check.bat not found"
+cp "$deployDir/setup.bat" "$packageDir/" 2>/dev/null || echo "Warning: setup.bat not found"
 
 # Copy documentation (simplified)
 cp "$deployDir/README.md" "$packageDir/" 2>/dev/null || echo "Warning: README.md not found"
@@ -72,11 +73,12 @@ cat > "$packageDir/README.txt" << 'EOF'
 OCR Card Recognizer - Standard Deployment
 ========================================
 
-Version: v2.0.3
+Version: v2.0.8
 
 Quick Start:
 -----------
-1. Right-click install.bat and select "Run as administrator"
+1. Right-click setup.bat and select "Run as administrator" (RECOMMENDED)
+   OR Right-click install.bat and select "Run as administrator"
 2. Wait for installation to complete (5-10 minutes)
 3. Double-click start.bat
 4. Open browser and visit: http://localhost:5000
