@@ -61,25 +61,32 @@ if exist "requirements.txt" (
         echo [WARNING] Installation from requirements.txt failed
         echo Trying to install essential dependencies manually...
         echo.
-        %PYTHON_CMD% -m pip install fastapi uvicorn pillow python-multipart
+        echo Installing FastAPI and Uvicorn...
+        %PYTHON_CMD% -m pip install fastapi uvicorn[standard] python-multipart
         if %errorLevel% neq 0 (
-            echo [ERROR] Failed to install dependencies
-            echo.
-            echo Possible solutions:
-            echo 1. Check your internet connection
-            echo 2. Try updating pip: %PYTHON_CMD% -m pip install --upgrade pip
-            echo 3. Use domestic mirror: %PYTHON_CMD% -m pip install fastapi uvicorn pillow python-multipart -i https://pypi.tuna.tsinghua.edu.cn/simple
+            echo [ERROR] Failed to install FastAPI dependencies
             echo.
             cd ..
             echo Press any key to exit...
             pause >nul
             exit /b 1
         )
+        echo.
+        echo Installing PaddlePaddle and PaddleOCR...
+        echo Note: This may take a few minutes...
+        %PYTHON_CMD% -m pip install paddleocr opencv-python-headless pillow numpy pydantic pydantic-settings python-dotenv
+        if %errorLevel% neq 0 (
+            echo.
+            echo [WARNING] Failed to install PaddleOCR dependencies
+            echo Trying alternative installation method...
+            echo.
+            %PYTHON_CMD% -m pip install paddleocr -i https://pypi.tuna.tsinghua.edu.cn/simple
+        )
     )
 ) else (
     echo [ERROR] requirements.txt not found in backend directory
     echo Installing essential dependencies manually...
-    %PYTHON_CMD% -m pip install fastapi uvicorn pillow python-multipart
+    %PYTHON_CMD% -m pip install fastapi uvicorn[standard] python-multipart
     if %errorLevel% neq 0 (
         echo [ERROR] Failed to install dependencies
         cd ..

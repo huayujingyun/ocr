@@ -4,15 +4,15 @@ uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 
 # PaddlePaddle和PaddleOCR（兼容Python 3.12）
-paddlepaddle==3.2.2
-paddleocr==2.8.1
+paddlepaddle>=2.6.0
+paddleocr>=2.8.0
 
 # 图像处理
-Pillow==10.1.0
-numpy==1.26.4
-opencv-python-headless==4.8.1.78
+Pillow>=10.1.0
+numpy>=1.26.0
+opencv-python-headless>=4.8.0
 
 # 工具库
-pydantic==2.5.0
-pydantic-settings==2.1.0
-python-dotenv==1.0.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
