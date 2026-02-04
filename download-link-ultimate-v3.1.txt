@@ -1,0 +1,45 @@
+购物卡OCR识别系统 - 终极部署包 v3.1.0（Win11修复版）
+
+版本：v3.1.0
+发布日期：2025-02-04
+包含Win11修复文件
+下载链接（30天有效）：
+https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/card-ocr-ultimate-v3.1.0.tar_3c5a37b1.gz?sign=1772780336-58e2fdb838-0-33984d4e475ccf5deaec7347330d647fd802caf76d1ed04197b1d052917ef672
+
+文件信息：
+- 文件名：card-ocr-ultimate-v3.1.0.tar.gz
+- 大小：230.83 KB
+- 类型：压缩包 (tar.gz)
+- 有效期：30天
+
+🎯 v3.1.0 新增内容：
+✓ backend/Dockerfile.win11 - Win11专用后端Dockerfile
+✓ docker-compose-win11.yml - Win11专用Docker配置
+✓ install-win11.bat - Win11专用安装脚本
+✓ start-win11.bat - Win11专用启动脚本
+✓ stop-win11.bat - Win11专用停止脚本
+✓ status-win11.bat - Win11专用状态检查
+✓ WIN11_DOCKER_DEPLOYMENT.md - Win11部署文档
+
+🚀 Win11快速部署（修复APT问题）：
+1. 解压：tar -xzf card-ocr-ultimate-v3.1.0.tar.gz
+2. 安装：install-win11.bat
+3. 启动：start-win11.bat
+4. 访问：http://localhost:5000
+
+💡 v3.1.0 修复的问题：
+✓ Win11 Docker APT镜像源配置失败（exit code 2）
+✓ 新版Debian 12软件源格式兼容问题
+
+📚 重要文档：
+- WIN11_DOCKER_DEPLOYMENT.md - Win11部署文档（从这里开始）
+- README.md - 主文档
+- NO_DOCKER_WEB_FIX.md - 非Docker版本故障排除
+
+🔧 Win11专用脚本：
+1. install-win11.bat - Win11安装脚本
+2. start-win11.bat - Win11启动脚本
+3. stop-win11.bat - Win11停止脚本
+4. status-win11.bat - Win11状态检查
+
+💡 建议：如果Docker仍有问题，使用非Docker版本（100%成功）
