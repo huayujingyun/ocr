@@ -1,0 +1,107 @@
+{
+  "name": "购物卡/加油卡OCR识别系统",
+  "version": "2.0.0",
+  "platform": "Windows",
+  "releaseDate": "2024-02-04",
+  "description": "基于PaddleOCR-VL-1.5的本地化OCR识别系统，支持购物卡和加油卡自动识别",
+  "features": [
+    "完全离线运行",
+    "支持中英文识别",
+    "模板框选模式",
+    "传统OCR模式",
+    "批量识别",
+    "Excel导出",
+    "图片预处理",
+    "数据隐私保护"
+  ],
+  "requirements": {
+    "os": "Windows 10/11 64位",
+    "memory": "4GB+",
+    "disk": "2GB+",
+    "optional": {
+      "docker": "Docker Desktop for Windows (可选)",
+      "gpu": "NVIDIA显卡（可选，用于加速）"
+    }
+  },
+  "deployment": {
+    "methods": [
+      {
+        "name": "Docker部署",
+        "difficulty": "简单",
+        "time": "5分钟",
+        "recommended": true
+      },
+      {
+        "name": "标准部署",
+        "difficulty": "中等",
+        "time": "10分钟",
+        "recommended": false
+      },
+      {
+        "name": "便携式部署",
+        "difficulty": "困难",
+        "time": "15分钟",
+        "recommended": false
+      }
+    ]
+  },
+  "download": {
+    "online": {
+      "filename": "ocr-card-recognizer-windows.zip",
+      "size": "~50MB",
+      "description": "在线安装包，运行安装脚本自动下载依赖"
+    },
+    "offline": {
+      "filename": "ocr-card-recognizer-windows-full.zip",
+      "size": "~1.5GB",
+      "description": "离线完整包，包含所有依赖，解压即可运行"
+    }
+  },
+  "services": {
+    "frontend": {
+      "name": "Next.js前端",
+      "port": 5000,
+      "url": "http://localhost:5000",
+      "tech": "Next.js 16 + React 19"
+    },
+    "backend": {
+      "name": "FastAPI后端",
+      "port": 8001,
+      "url": "http://localhost:8001/docs",
+      "tech": "Python 3.12 + FastAPI + PaddleOCR"
+    }
+  },
+  "models": {
+    "name": "PaddleOCR-VL-1.5",
+    "size": "~200MB",
+    "download": "首次启动自动下载",
+    "cache": "~/.paddleocr/"
+  },
+  "support": {
+    "documentation": [
+      "README.md - 完整部署指南",
+      "QUICKSTART.md - 快速开始指南",
+      "PORTABLE_PYTHON.md - 便携式Python指南",
+      "PADDLEOCR_DEPLOY.md - PaddleOCR部署文档"
+    ],
+    "logs": {
+      "backend": "logs/backend.log",
+      "frontend": "logs/frontend.log"
+    }
+  },
+  "changelog": {
+    "v2.0.0": [
+      "使用本地PaddleOCR替代云端服务",
+      "实现完全离线运行",
+      "支持Windows本地部署",
+      "提供便携式Python方案",
+      "支持Docker部署",
+      "优化识别速度（提升2-3倍）"
+    ],
+    "v1.0.0": [
+      "初始版本",
+      "使用云端OCR服务",
+      "支持模板识别和传统OCR"
+    ]
+  }
+}

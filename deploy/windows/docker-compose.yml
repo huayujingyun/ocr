@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # 前端服务
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: ocr-frontend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PADDLEOCR_API_URL=http://backend:8001
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - ocr-network
+
+  # 后端服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ocr-backend
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./data/uploads:/app/uploads
+      - ./data/exports:/app/exports
+      - ocr-models:/root/.paddleocr
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OCR_PORT=8001
+    restart: unless-stopped
+    networks:
+      - ocr-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  ocr-models:
+    driver: local
+
+networks:
+  ocr-network:
+    driver: bridge
