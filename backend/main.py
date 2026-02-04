@@ -66,6 +66,18 @@ class CropRecognitionRequest(BaseModel):
     preprocess: Optional[str] = Field(None, description="预处理方式")
 
 
+class CardImage(BaseModel):
+    """卡片图片"""
+    label: str = Field(..., description="标签（卡号/密码）")
+    imageData: str = Field(..., description="base64编码的图片")
+
+
+class TemplateOCRRequest(BaseModel):
+    """模板OCR识别请求（前端使用）"""
+    croppedImages: List[CardImage] = Field(..., description="裁剪后的图片列表")
+    useTemplate: bool = Field(True, description="是否使用模板")
+
+
 class RecognitionResponse(BaseModel):
     """OCR识别响应"""
     success: bool = Field(..., description="是否成功")
@@ -288,6 +300,83 @@ async def recognize_from_file(
             text="",
             message=f"识别失败: {str(e)}"
         )
+
+
+@app.post("/api/ocr", tags=["OCR识别"])
+async def recognize_with_template(request: TemplateOCRRequest):
+    """
+    模板OCR识别（前端使用）
+
+    支持多个裁剪区域的批量识别，返回卡号和密码
+
+    Args:
+        request: 包含裁剪图片列表和模板标志的请求
+
+    Returns:
+        识别结果列表
+    """
+    if ocr_service is None:
+        raise HTTPException(status_code=503, detail="OCR服务未初始化")
+
+    try:
+        results = []
+
+        for card_image in request.croppedImages:
+            try:
+                # 解码图片
+                image = ocr_service.base64_to_image(card_image.imageData)
+
+                # 执行识别
+                text = ocr_service.recognize_text(image)
+
+                logger.info(f"区域 {card_image.label} 识别成功，识别到: {text}")
+
+                # 根据标签判断是卡号还是密码
+                label_lower = card_image.label.lower()
+                is_card_number = any(keyword in label_lower for keyword in ['卡号', 'card', 'number'])
+
+                result = {
+                    'label': card_image.label,
+                    'text': text,
+                    'isCardNumber': is_card_number
+                }
+                results.append(result)
+
+            except Exception as e:
+                logger.error(f"区域 {card_image.label} 识别失败: {e}")
+                # 即使失败也添加结果，标记为空
+                results.append({
+                    'label': card_image.label,
+                    'text': '',
+                    'isCardNumber': '卡号' in card_image.label or 'card' in card_image.label.lower()
+                })
+
+        # 整理为前端期望的格式
+        card_number = None
+        password = None
+
+        for result in results:
+            if result['isCardNumber'] and not card_number:
+                card_number = result['text']
+            elif not result['isCardNumber'] and not password:
+                password = result['text']
+
+        return {
+            'success': True,
+            'cards': [{
+                'cardNumber': card_number or '',
+                'password': password or ''
+            }],
+            'message': '识别完成'
+        }
+
+    except Exception as e:
+        logger.error(f"模板识别失败: {e}")
+        return {
+            'success': False,
+            'error': str(e),
+            'cards': []
+        }
 
 
 # 全局异常处理
