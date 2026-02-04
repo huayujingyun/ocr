@@ -98,24 +98,79 @@ exit /b 1
 
 echo.
 echo [Step 3/7] Checking Node.js installation...
-node --version >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [ERROR] Node.js is not installed
+
+REM Try to find node.exe in common locations
+set NODE_FOUND=0
+
+REM Check PATH first
+where node.exe >nul 2>&1
+if %errorLevel% equ 0 (
+    for /f "delims=" %%i in ('where node.exe') do set NODE_PATH=%%i
+    set NODE_FOUND=1
+    goto :node_check_version
+)
+
+REM Check Program Files
+if exist "C:\Program Files\nodejs\node.exe" (
+    set NODE_PATH=C:\Program Files\nodejs\node.exe
+    set NODE_FOUND=1
+    goto :node_check_version
+)
+
+REM Check Program Files (x86)
+if exist "C:\Program Files (x86)\nodejs\node.exe" (
+    set NODE_PATH=C:\Program Files (x86)\nodejs\node.exe
+    set NODE_FOUND=1
+    goto :node_check_version
+)
+
+REM Check AppData
+if exist "%LOCALAPPDATA%\Programs\nodejs\node.exe" (
+    set NODE_PATH=%LOCALAPPDATA%\Programs\nodejs\node.exe
+    set NODE_FOUND=1
+    goto :node_check_version
+)
+
+REM Node.js not found anywhere
+if %NODE_FOUND% equ 0 (
+    echo [ERROR] Node.js is not installed or not in PATH
     echo.
     echo Please install Node.js:
     echo 1. Visit: https://nodejs.org/
     echo 2. Download: LTS version (recommended Node.js 20 LTS)
     echo 3. Run the installer
     echo 4. Click "Install" to complete
+    echo 5. IMPORTANT: Restart cmd.exe after installation
+    echo.
+    echo Alternative: Run setup.bat to automatically install dependencies
     echo.
     echo After installation, please run this script again
     echo.
     echo Press any key to exit...
     pause >nul
     exit /b 1
-) else (
-    for /f "tokens=*" %%i in ('node --version') do set NODE_VERSION=%%i
-    echo Node.js version: %NODE_VERSION%
+)
+
+:node_check_version
+echo Node.js found at: %NODE_PATH%
+"%NODE_PATH%" --version >nul 2>&1
+if %errorLevel% neq 0 (
+    echo [ERROR] Node.js found but cannot execute
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit /b 1
+)
+for /f "tokens=*" %%i in ('"%NODE_PATH%" --version') do set NODE_VERSION=%%i
+echo Node.js version: %NODE_VERSION%
+
+REM Add Node.js to PATH if not already there
+echo %PATH% | findstr /i "nodejs" >nul
+if %errorLevel% neq 0 (
+    echo [WARNING] Node.js is not in PATH
+    echo Adding Node.js to current session...
+    set "PATH=%PATH%;C:\Program Files\nodejs;%LOCALAPPDATA%\Programs\nodejs"
+    echo Node.js added to PATH for this session
 )
 
 echo.
