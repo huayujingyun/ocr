@@ -40,11 +40,6 @@ class OCRService:
             self._ocr_engine = PaddleOCR(
                 use_angle_cls=True,  # 使用方向分类器
                 lang='ch',           # 中英文识别
-                show_log=False,      # 关闭详细日志
-                det_db_thresh=0.3,   # 文本检测阈值
-                det_db_box_thresh=0.5,
-                rec_batch_num=6,     # 批处理大小
-                max_side_len=960,    # 最大边长
             )
             logger.info("PaddleOCR-VL-1.5引擎初始化成功（CPU模式）")
         except Exception as e:
