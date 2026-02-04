@@ -1,0 +1,28 @@
+购物卡OCR识别系统 - Windows一键部署包（修复版）
+
+版本：1.0.1-fixed
+修复内容：修复批处理文件编码问题
+下载链接（30天有效）：
+https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/card-ocr-deployment-v1.0.1-fixed.tar_fa71558d.gz?sign=1772776526-6729e77930-0-34eaf8ece9cd3f8c0b6c3b45aae6943a32b2b44a7a7b5edfce28db668a58cc1d
+
+文件信息：
+- 文件名：card-ocr-deployment-v1.0.1-fixed.tar.gz
+- 大小：184.72 KB
+- 类型：压缩包 (tar.gz)
+
+快速开始：
+1. 下载文件
+2. 使用7-Zip解压
+3. 右键运行install.bat（管理员）
+4. 运行start.bat启动服务
+5. 访问 http://localhost:5000
+
+修复说明：
+✓ 修复install.bat编码问题
+✓ 修复start.bat编码问题
+✓ 修复stop.bat编码问题
+✓ 修复status.bat编码问题
+✓ 修复check-deps.bat编码问题
+✓ 修复package.bat编码问题
+
+详细文档请查看解压后的文件。
