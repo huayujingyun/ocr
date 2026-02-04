@@ -52,7 +52,24 @@ echo [Step 2/3] Installing FastAPI and backend dependencies...
 echo This may take a few minutes...
 echo.
 
-cd backend
+cd /d "%~dp0backend"
+if %errorLevel% neq 0 (
+    echo [ERROR] Cannot change to backend directory
+    echo Current directory: %CD%
+    echo Trying: cd /d "%~dp0backend"
+    echo.
+    echo Please check:
+    echo   1. You are running this script from the correct directory
+    echo   2. The backend folder exists next to fix-deps.bat
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit /b 1
+)
+
+echo [INFO] Now in directory: %CD%
+echo.
+
 if exist "requirements.txt" (
     echo Installing dependencies from requirements.txt...
     %PYTHON_CMD% -m pip install -r requirements.txt --upgrade
@@ -66,7 +83,7 @@ if exist "requirements.txt" (
         if %errorLevel% neq 0 (
             echo [ERROR] Failed to install FastAPI dependencies
             echo.
-            cd ..
+            cd /d "%~dp0"
             echo Press any key to exit...
             pause >nul
             exit /b 1
@@ -84,17 +101,32 @@ if exist "requirements.txt" (
         )
     )
 ) else (
-    echo [ERROR] requirements.txt not found in backend directory
+    echo [WARNING] requirements.txt not found in backend directory
     echo Installing essential dependencies manually...
+    echo.
+    echo Installing FastAPI and Uvicorn...
     %PYTHON_CMD% -m pip install fastapi uvicorn[standard] python-multipart
     if %errorLevel% neq 0 (
         echo [ERROR] Failed to install dependencies
-        cd ..
+        cd /d "%~dp0"
         echo Press any key to exit...
         pause >nul
         exit /b 1
     )
+    echo.
+    echo Installing PaddlePaddle and PaddleOCR...
+    echo Note: This may take a few minutes...
+    %PYTHON_CMD% -m pip install paddleocr opencv-python-headless pillow numpy pydantic pydantic-settings python-dotenv
+    if %errorLevel% neq 0 (
+        echo.
+        echo [WARNING] Failed to install PaddleOCR dependencies
+        echo Trying alternative installation method...
+        echo.
+        %PYTHON_CMD% -m pip install paddleocr -i https://pypi.tuna.tsinghua.edu.cn/simple
+    )
 )
+
+cd /d "%~dp0"
 
 cd ..
 echo.

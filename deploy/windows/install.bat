@@ -193,12 +193,13 @@ if %errorLevel% neq 0 (
 
 echo.
 echo [Step 5/7] Installing backend dependencies...
-cd backend
+cd /d "%~dp0backend"
 echo Checking backend directory...
 if not exist "requirements.txt" (
     echo [ERROR] requirements.txt not found
     echo Please make sure you are running this script in the correct directory
-    cd ..
+    echo Current directory: %CD%
+    cd /d "%~dp0"
     echo.
     echo Press any key to exit...
     pause >nul
@@ -215,13 +216,13 @@ if %errorLevel% neq 0 (
     echo 2. Try updating pip: python -m pip install --upgrade pip
     echo 3. Use domestic mirror: pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     echo.
-    cd ..
+    cd /d "%~dp0"
     echo Press any key to exit...
     pause >nul
     exit /b 1
 )
 echo Python dependencies installed successfully
-cd ..
+cd /d "%~dp0"
 
 echo.
 echo [Step 6/7] Installing frontend dependencies...
