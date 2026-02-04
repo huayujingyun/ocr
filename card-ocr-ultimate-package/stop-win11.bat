@@ -1,19 +1,19 @@
 @echo off
-chcp 65001 >nul
+chcp 65001 >nul 2>&1
 echo ========================================
-echo 购物卡OCR系统 - Win11专用停止脚本
+echo Shopping Card OCR - Win11 Stop Script
 echo ========================================
 echo.
 
-echo 正在停止服务...
+echo Stopping services...
 docker-compose -f docker-compose-win11.yml down
 if errorlevel 1 (
     echo.
-    echo ❌ 停止服务时出现错误
+    echo ERROR: Error occurred while stopping services
     pause
     exit /b 1
 )
 echo.
-echo ✓ 服务已停止
+echo OK: Services stopped
 echo.
 pause

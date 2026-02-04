@@ -1,38 +1,38 @@
 @echo off
-chcp 65001 >nul
+chcp 65001 >nul 2>&1
 echo ========================================
-echo 购物卡OCR系统 - Win11服务状态
+echo Shopping Card OCR - Win11 Service Status
 echo ========================================
 echo.
 
-echo 正在检查服务状态...
+echo Checking service status...
 docker-compose -f docker-compose-win11.yml ps
 echo.
 
 echo ========================================
-echo 详细信息
+echo Detailed Information
 echo ========================================
 echo.
 
-echo 前端服务（端口5000）：
+echo Frontend service (port 5000):
 curl -I http://localhost:5000 2>nul
 if errorlevel 1 (
-    echo ❌ 前端服务未响应
+    echo ERROR: Frontend service not responding
 ) else (
-    echo ✓ 前端服务运行正常
+    echo OK: Frontend service is running
 )
 echo.
 
-echo 后端服务（端口8001）：
+echo Backend service (port 8001):
 curl -I http://localhost:8001/health 2>nul
 if errorlevel 1 (
-    echo ❌ 后端服务未响应
+    echo ERROR: Backend service not responding
 ) else (
-    echo ✓ 后端服务运行正常
+    echo OK: Backend service is running
 )
 echo.
 
 echo ========================================
-echo 访问地址：http://localhost:5000
+echo Visit: http://localhost:5000
 echo ========================================
 pause

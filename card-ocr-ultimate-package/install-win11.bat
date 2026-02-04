@@ -1,57 +1,57 @@
 @echo off
-chcp 65001 >nul
+chcp 65001 >nul 2>&1
 echo ========================================
-echo 购物卡OCR系统 - Win11专用安装脚本
+echo Shopping Card OCR - Win11 Installation
 echo ========================================
 echo.
 
-echo 正在检查Docker是否运行...
+echo Checking Docker status...
 docker version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Docker未运行，请先启动Docker Desktop
+    echo ERROR: Docker is not running, please start Docker Desktop first
     pause
     exit /b 1
 )
-echo ✓ Docker运行正常
+echo OK: Docker is running
 echo.
 
-echo 正在构建后端服务（使用清华镜像源）...
+echo Building backend service (using Tsinghua mirror)...
 docker-compose -f docker-compose-win11.yml build paddleocr-service
 if errorlevel 1 (
     echo.
-    echo ❌ 后端服务构建失败！
+    echo ERROR: Backend service build failed!
     echo.
-    echo 可能的原因：
-    echo 1. 网络连接问题
-    echo 2. 清华镜像源暂时不可用
-    echo 3. Docker资源不足
+    echo Possible reasons:
+    echo 1. Network connection issues
+    echo 2. Mirror server temporarily unavailable
+    echo 3. Docker resource insufficient
     echo.
-    echo 建议：
-    echo 1. 运行 test-docker-network.bat 检查网络
-    echo 2. 或使用非Docker版本（推荐，100%%成功）
+    echo Suggestions:
+    echo 1. Run test-docker-network.bat to check network
+    echo 2. Or use non-Docker version (recommended, 100%% success)
     pause
     exit /b 1
 )
-echo ✓ 后端服务构建成功
+echo OK: Backend service built successfully
 echo.
 
-echo 正在构建前端服务...
+echo Building frontend service...
 docker-compose -f docker-compose-win11.yml build frontend
 if errorlevel 1 (
     echo.
-    echo ❌ 前端服务构建失败！
+    echo ERROR: Frontend service build failed!
     pause
     exit /b 1
 )
-echo ✓ 前端服务构建成功
+echo OK: Frontend service built successfully
 echo.
 
 echo ========================================
-echo ✓ 所有服务构建完成！
+echo OK: All services built successfully!
 echo ========================================
 echo.
-echo 下一步：
-echo 1. 运行 start-win11.bat 启动服务
-echo 2. 访问 http://localhost:5000
+echo Next steps:
+echo 1. Run start-win11.bat to start services
+echo 2. Visit http://localhost:5000
 echo.
 pause
