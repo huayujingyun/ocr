@@ -69,6 +69,23 @@ echo [4/6] Building Docker images...
 echo This may take 10-20 minutes, please wait...
 echo.
 
+REM Change to script directory
+cd /d "%~dp0"
+
+REM Check if docker-compose.yml exists
+if not exist "docker-compose.yml" (
+    echo [ERROR] docker-compose.yml not found!
+    echo.
+    echo Current directory: %CD%
+    echo.
+    echo Please ensure you are running this script from the correct directory.
+    pause
+    exit /b 1
+)
+
+echo [OK] Found docker-compose.yml in: %CD%
+echo.
+
 docker-compose build --no-cache
 
 if %errorLevel% neq 0 (

@@ -12,6 +12,19 @@ echo.
 echo Checking Docker containers...
 echo.
 
+REM Change to script directory
+cd /d "%~dp0"
+
+REM Check if docker-compose.yml exists
+if not exist "docker-compose.yml" (
+    echo [ERROR] docker-compose.yml not found!
+    echo.
+    echo Current directory: %CD%
+    echo.
+    pause
+    exit /b 1
+)
+
 docker-compose ps
 
 echo.
