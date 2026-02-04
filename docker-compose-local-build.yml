@@ -5,7 +5,7 @@ services:
   paddleocr-service:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.cn
     container_name: paddleocr-service
     ports:
       - "8001:8001"

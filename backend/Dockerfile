@@ -1,40 +1,48 @@
-# 使用Python 3.9作为基础镜像
-FROM python:3.9-slim
+# 使用 Python 3.12 作为基础镜像
+FROM python:3.12-slim
 
 # 设置工作目录
 WORKDIR /app
 
 # 设置环境变量
-ENV PYTHONUNBUFFERED=1
-ENV PADDLE_NO_QUANT=1
-ENV PADDLE_SKIP_CXX_ABI_CHECK=1
+ENV PYTHONUNBUFFERED=1 \
+    PADDLE_NO_QUANT=1 \
+    PADDLE_SKIP_CXX_ABI_CHECK=1
 
-# 安装系统依赖
-RUN apt-get update && apt-get install -y \
+# 使用阿里云镜像源替换默认源
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources || \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# 更新并安装系统依赖（使用 --no-install-recommends 减少依赖）
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
-    libxrender-dev \
+    libxrender1 \
     libgomp1 \
     wget \
-    && rm -rf /var/lib/apt/lists/*
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # 复制依赖文件
 COPY requirements.txt .
 
-# 安装Python依赖
-RUN pip install --no-cache-dir -r requirements.txt
+# 安装 Python 依赖（使用清华镜像源）
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 # 复制应用代码
 COPY ocr_service.py .
 COPY main.py .
 
-# 创建模型缓存目录
-RUN mkdir -p /root/.paddleocr
+# 创建必要的目录
+RUN mkdir -p /app/logs /app/models /root/.paddleocr
 
-# 预下载模型文件（确保离线可用）
-RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=False, show_log=False)" || true
+# 设置 PaddleOCR 使用国内模型下载镜像
+ENV PADDLEOCR_HOME=/root/.paddleocr
 
 # 暴露端口
 EXPOSE 8001
