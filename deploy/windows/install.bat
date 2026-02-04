@@ -1,7 +1,7 @@
 @echo off
 REM ========================================
 REM OCR Card Recognizer - Windows Installer
-REM Version: v2.0.2
+REM Version: v2.0.5
 REM ========================================
 REM
 
@@ -18,7 +18,7 @@ if %errorLevel% neq 0 (
 
 echo ========================================
 echo OCR Card Recognizer - Installer
-echo Version: v2.0.2
+echo Version: v2.0.5
 echo ========================================
 echo.
 
@@ -40,7 +40,7 @@ echo [Step 2/7] Checking Python installation...
 REM Try python command first
 python --version >nul 2>&1
 if %errorLevel% equ 0 (
-    for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
+    for /f "tokens=*" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
     echo Python version: %PYTHON_VERSION%
     echo Python command: python
     goto :python_found
@@ -49,7 +49,7 @@ if %errorLevel% equ 0 (
 REM Try py command (Python Launcher)
 py --version >nul 2>&1
 if %errorLevel% equ 0 (
-    for /f "tokens=2" %%i in ('py --version 2^>^&1') do set PYTHON_VERSION=%%i
+    for /f "tokens=*" %%i in ('py --version 2^>^&1') do set PYTHON_VERSION=%%i
     echo Python version: %PYTHON_VERSION%
     echo Python command: py
     REM Create python.bat as wrapper
