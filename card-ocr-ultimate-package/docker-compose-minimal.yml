@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # PaddleOCR backend service - Minimal dependencies
+  paddleocr-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.noapt
+    container_name: paddleocr-service-minimal
+    ports:
+      - "8001:8001"
+    volumes:
+      - paddleocr-cache:/root/.paddleocr
+      - ./logs:/app/logs
+      - ./backend:/app
+    environment:
+      - USE_GPU=false
+      - LANG=ch
+      - OCR_PORT=8001
+      - LOG_LEVEL=INFO
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - card-ocr-network
+
+  # Next.js frontend service
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.cn
+    container_name: card-ocr-frontend-minimal
+    ports:
+      - "5000:5000"
+    environment:
+      - PADDLEOCR_API_URL=http://paddleocr-service:8001
+      - NODE_ENV=production
+    volumes:
+      - ./logs:/app/logs
+      - ./src:/app/src
+    depends_on:
+      - paddleocr-service
+    restart: unless-stopped
+    networks:
+      - card-ocr-network
+
+volumes:
+  paddleocr-cache:
+    driver: local
+
+networks:
+  card-ocr-network:
+    driver: bridge
