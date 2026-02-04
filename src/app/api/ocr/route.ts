@@ -224,14 +224,6 @@ async function recognizeTraditional(image: string): Promise<CardData[] | null> {
     return null;
   }
 }
-    }
-
-    const cards: CardData[] = parsed.cards.map((card: any) => {
-  } catch (error) {
-    console.error('【传统OCR失败】', error);
-    return null;
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
