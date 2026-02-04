@@ -11,6 +11,12 @@ echo OCR Card Recognizer - Start Service
 echo ========================================
 echo.
 
+REM Show current directory
+echo [INFO] Current directory: %CD%
+echo [INFO] Script location: %~dp0
+echo [INFO] Absolute script path: %~f0
+echo.
+
 REM Check port usage
 echo [CHECK] Checking port usage...
 netstat -ano | findstr ":5000" >nul
@@ -45,14 +51,27 @@ if %errorLevel% equ 0 (
 echo Using Python command: %PYTHON_CMD%
 
 REM Check if backend directory exists
-if not exist "backend" (
+echo [INFO] Checking for backend directory...
+if not exist "%~dp0backend" (
     echo [ERROR] backend directory not found
-    echo Please make sure you are running this script in the correct directory
+    echo.
+    echo [DEBUG] Expected location: %~dp0backend
+    echo [DEBUG] Looking for: main.py
+    echo.
+    echo Please check:
+    echo   1. You are running start.bat from the correct directory
+    echo   2. The deployment package was extracted completely
+    echo   3. The backend folder exists next to start.bat
+    echo.
+    echo Current directory structure:
+    dir /b
     echo.
     echo Press any key to exit...
     pause >nul
     exit /b 1
 )
+
+echo [OK] backend directory found
 
 REM Start backend service
 start "OCR Backend" /min cmd /c "cd /d "%~dp0backend" && %PYTHON_CMD% main.py > "%~dp0logs\backend.log" 2>&1"
