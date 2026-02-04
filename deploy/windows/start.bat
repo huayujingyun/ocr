@@ -44,7 +44,18 @@ if %errorLevel% equ 0 (
 )
 echo Using Python command: %PYTHON_CMD%
 
-start "OCR Backend" /min cmd /c "cd backend && %PYTHON_CMD% main.py > ..\logs\backend.log 2>&1"
+REM Check if backend directory exists
+if not exist "backend" (
+    echo [ERROR] backend directory not found
+    echo Please make sure you are running this script in the correct directory
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit /b 1
+)
+
+REM Start backend service
+start "OCR Backend" /min cmd /c "cd /d "%~dp0backend" && %PYTHON_CMD% main.py > "%~dp0logs\backend.log" 2>&1"
 
 echo [WAIT] Waiting for backend service to start (first startup requires downloading OCR models, ~30-60 seconds)...
 timeout /t 5 /nobreak >nul
@@ -79,7 +90,7 @@ exit /b 1
 :start_frontend
 echo.
 echo [START] Starting frontend service...
-start "OCR Frontend" /min cmd /c "pnpm run dev --port 5000 > logs\frontend.log 2>&1"
+start "OCR Frontend" /min cmd /c "cd /d "%~dp0" && pnpm run dev --port 5000 > "%~dp0logs\frontend.log" 2>&1"
 
 echo [WAIT] Waiting for frontend service to start (~10-30 seconds)...
 timeout /t 10 /nobreak >nul
