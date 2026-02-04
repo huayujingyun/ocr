@@ -1,17 +1,17 @@
-# Windows部署包打包脚本（PowerShell）
+# Windows Deployment Package Builder (PowerShell)
 
 Write-Host "=====================================" -ForegroundColor Cyan
-Write-Host "Windows部署包打包脚本" -ForegroundColor Cyan
+Write-Host "Windows Deployment Package Builder" -ForegroundColor Cyan
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host ""
 
-# 配置
+# Configuration
 $deployDir = "deploy\windows"
 $packageName = "ocr-card-recognizer-windows"
 $version = "v2.0.0"
 
-# 步骤1：创建部署目录
-Write-Host "[步骤 1/5] 创建部署目录..." -ForegroundColor Yellow
+# Step 1: Create deployment directories
+Write-Host "[Step 1/5] Creating deployment directories..." -ForegroundColor Yellow
 
 if (!(Test-Path "$deployDir\logs")) {
     New-Item -ItemType Directory -Path "$deployDir\logs" -Force | Out-Null
@@ -25,8 +25,8 @@ if (!(Test-Path "$deployDir\data\exports")) {
     New-Item -ItemType Directory -Path "$deployDir\data\exports" -Force | Out-Null
 }
 
-# 步骤2：复制前端文件
-Write-Host "[步骤 2/5] 复制前端文件..." -ForegroundColor Yellow
+# Step 2: Copy frontend files
+Write-Host "[Step 2/5] Copying frontend files..." -ForegroundColor Yellow
 
 if (Test-Path "src") {
     Copy-Item -Path "src" -Destination "$deployDir\frontend\src" -Recurse -Force
@@ -48,22 +48,22 @@ if (Test-Path "tsconfig.json") {
     Copy-Item -Path "tsconfig.json" -Destination "$deployDir\frontend\" -Force
 }
 
-# 步骤3：复制后端文件
-Write-Host "[步骤 3/5] 复制后端文件..." -ForegroundColor Yellow
+# Step 3: Copy backend files
+Write-Host "[Step 3/5] Copying backend files..." -ForegroundColor Yellow
 
 if (Test-Path "backend") {
     Copy-Item -Path "backend\*.py" -Destination "$deployDir\backend\" -Force -ErrorAction SilentlyContinue
     Copy-Item -Path "backend\requirements.txt" -Destination "$deployDir\backend\" -Force -ErrorAction SilentlyContinue
 }
 
-# 步骤4：复制配置文件
-Write-Host "[步骤 4/5] 复制配置文件..." -ForegroundColor Yellow
+# Step 4: Copy configuration files
+Write-Host "[Step 4/5] Copying configuration files..." -ForegroundColor Yellow
 
 if (Test-Path ".env.example") {
     Copy-Item -Path ".env.example" -Destination "$deployDir\.env" -Force
 }
 
-# 复制文档
+# Copy documentation
 if (Test-Path "README.md") {
     Copy-Item -Path "README.md" -Destination "$deployDir\" -Force
 }
@@ -76,30 +76,30 @@ if (Test-Path "MIGRATION_GUIDE.md") {
     Copy-Item -Path "MIGRATION_GUIDE.md" -Destination "$deployDir\" -Force
 }
 
-# 步骤5：创建压缩包
-Write-Host "[步骤 5/5] 创建压缩包..." -ForegroundColor Yellow
+# Step 5: Create zip package
+Write-Host "[Step 5/5] Creating zip package..." -ForegroundColor Yellow
 
 $zipFile = "${packageName}-${version}.zip"
 
-# 使用PowerShell 5.1+的Compress-Archive
+# Use PowerShell 5.1+ Compress-Archive
 Compress-Archive -Path "$deployDir\*" -DestinationPath "$zipFile" -Force
 
-# 获取文件大小
+# Get file size
 $fileSize = (Get-Item $zipFile).Length / 1MB
 
 Write-Host ""
 Write-Host "=====================================" -ForegroundColor Green
-Write-Host "打包完成！" -ForegroundColor Green
+Write-Host "Package created successfully!" -ForegroundColor Green
 Write-Host "=====================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "部署包位置：$zipFile" -ForegroundColor White
-Write-Host "文件大小：$([math]::Round($fileSize, 2)) MB" -ForegroundColor White
+Write-Host "Package location: $zipFile" -ForegroundColor White
+Write-Host "File size: $([math]::Round($fileSize, 2)) MB" -ForegroundColor White
 Write-Host ""
-Write-Host "使用说明：" -ForegroundColor Yellow
-Write-Host "1. 将 $zipFile 复制到Windows电脑" -ForegroundColor White
-Write-Host "2. 解压到任意目录" -ForegroundColor White
-Write-Host "3. 双击 install.bat 开始安装" -ForegroundColor White
-Write-Host "4. 双击 start.bat 启动服务" -ForegroundColor White
+Write-Host "Usage instructions:" -ForegroundColor Yellow
+Write-Host "1. Copy $zipFile to your Windows computer" -ForegroundColor White
+Write-Host "2. Extract to any directory" -ForegroundColor White
+Write-Host "3. Double-click install.bat to start installation" -ForegroundColor White
+Write-Host "4. Double-click start.bat to start the service" -ForegroundColor White
 Write-Host ""
-Write-Host "访问地址：http://localhost:5000" -ForegroundColor Cyan
+Write-Host "Access URL: http://localhost:5000" -ForegroundColor Cyan
 Write-Host ""
