@@ -36,26 +36,65 @@ if %errorLevel% neq 0 (
 
 echo.
 echo [Step 2/7] Checking Python installation...
+
+REM Try python command first
 python --version >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [ERROR] Python is not installed
-    echo.
-    echo Please install Python:
-    echo 1. Visit: https://www.python.org/downloads/release/python-3128/
-    echo 2. Download: Windows installer (64-bit)
-    echo 3. Run the installer
-    echo 4. IMPORTANT: Check "Add Python to PATH"
-    echo 5. Click "Install Now"
-    echo.
-    echo After installation, please run this script again
-    echo.
-    echo Press any key to exit...
-    pause >nul
-    exit /b 1
-) else (
+if %errorLevel% equ 0 (
     for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
     echo Python version: %PYTHON_VERSION%
+    echo Python command: python
+    goto :python_found
 )
+
+REM Try py command (Python Launcher)
+py --version >nul 2>&1
+if %errorLevel% equ 0 (
+    for /f "tokens=2" %%i in ('py --version 2^>^&1') do set PYTHON_VERSION=%%i
+    echo Python version: %PYTHON_VERSION%
+    echo Python command: py
+    REM Create python.bat as wrapper
+    echo @echo off > python.bat
+    echo py %%* >> python.bat
+    echo Created python.bat wrapper
+    goto :python_found
+)
+
+REM Python not found
+echo [ERROR] Python is not installed or not in PATH
+echo.
+echo Current system only found PowerShell can run python
+echo But cmd.exe cannot find python command
+echo.
+echo Possible solutions:
+echo.
+echo [Solution 1] Check if Python is installed in PATH
+echo   1. Open cmd.exe and run: python --version
+echo   2. If it works, the PATH is correct
+echo   3. If not, Python is not in system PATH
+echo.
+echo [Solution 2] Reinstall Python with PATH added
+echo   1. Visit: https://www.python.org/downloads/release/python-3128/
+echo   2. Download: Windows installer (64-bit)
+echo   3. Run the installer
+echo   4. IMPORTANT: Check "Add Python to PATH"
+echo   5. Click "Install Now"
+echo   6. Restart cmd.exe after installation
+echo.
+echo [Solution 3] Manually add Python to PATH
+echo   1. Find Python installation path (usually: C:\Users\YourName\AppData\Local\Programs\Python\Python312\)
+echo   2. Right-click "This PC" -^> Properties -^> Advanced system settings -^> Environment Variables
+echo   3. Edit "Path" variable
+echo   4. Add Python installation path
+echo   5. Add Scripts subfolder path
+echo   6. Click OK and restart cmd.exe
+echo.
+echo After fixing PATH, please run this script again
+echo.
+echo Press any key to exit...
+pause >nul
+exit /b 1
+
+:python_found
 
 echo.
 echo [Step 3/7] Checking Node.js installation...

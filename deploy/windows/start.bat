@@ -29,7 +29,22 @@ if %errorLevel% equ 0 (
 
 echo.
 echo [START] Starting backend service...
-start "OCR Backend" /min cmd /c "cd backend && python main.py > ..\logs\backend.log 2>&1"
+
+REM Check if python command exists
+python --version >nul 2>&1
+if %errorLevel% equ 0 (
+    set PYTHON_CMD=python
+) else (
+    py --version >nul 2>&1
+    if %errorLevel% equ 0 (
+        set PYTHON_CMD=py
+    ) else (
+        set PYTHON_CMD=python
+    )
+)
+echo Using Python command: %PYTHON_CMD%
+
+start "OCR Backend" /min cmd /c "cd backend && %PYTHON_CMD% main.py > ..\logs\backend.log 2>&1"
 
 echo [WAIT] Waiting for backend service to start (first startup requires downloading OCR models, ~30-60 seconds)...
 timeout /t 5 /nobreak >nul
