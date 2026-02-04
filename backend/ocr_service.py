@@ -179,7 +179,7 @@ class OCRService:
                 processed_image = self.preprocess_denoise(processed_image)
 
             # 执行OCR识别
-            result = self._ocr_engine.ocr(processed_image, cls=True)
+            result = self._ocr_engine.ocr(processed_image)
 
             # 提取识别到的文字
             if result and result[0]:
