@@ -1,6 +1,25 @@
 {
-  "latest": "v2.1.3",
+  "latest": "v2.1.4",
   "versions": {
+    "v2.1.4": {
+      "version": "v2.1.4",
+      "releaseDate": "2026-02-04T11:35:58.196Z",
+      "fileName": "ocr-card-recognizer-windows-v2.1.4.tar.gz",
+      "fileKey": "ocr-card-recognizer-windows-v2.1.4.tar_02d2b3fa.gz",
+      "downloadUrl": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.4.tar_02d2b3fa.gz?sign=1772796958-ea3d82c645-0-8c704c52a804838284f09c1091617a3b5faf7a63434de3d6b4c48c9bb62591a7",
+      "fileSize": 135376,
+      "fileSizeHuman": "136 KB",
+      "description": "OCR Card Recognizer - Windows Deployment Package with backend API fix",
+      "changes": [
+        "Fixed backend API route mismatch issue",
+        "Added /api/ocr endpoint for frontend compatibility",
+        "Fixed template-based image cropping",
+        "Fixed OCR recognition failures",
+        "All previous fixes (Python env, Tailwind CSS, env vars)"
+      ],
+      "status": "deprecated",
+      "expiresIn": "2592000"
+    },
     "v2.1.3": {
       "version": "v2.1.3",
       "releaseDate": "2026-02-04T11:24:21.652Z",
@@ -16,7 +35,7 @@
         "Fixed Windows environment variable syntax",
         "All dependencies updated and tested"
       ],
-      "status": "stable",
+      "status": "deprecated",
       "expiresIn": "2592000"
     },
     "v2.1.2": {
@@ -38,7 +57,7 @@
     }
   },
   "quickStart": {
-    "download": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.3.tar_fbb696ab.gz?sign=1772796261-df39060e4b-0-7dfb925b121db795a26be418a40b56212de668b11cbeda9c68b5864afa690b8c",
+    "download": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.4.tar_02d2b3fa.gz?sign=1772796958-ea3d82c645-0-8c704c52a804838284f09c1091617a3b5faf7a63434de3d6b4c48c9bb62591a7",
     "extract": "Extract the .tar.gz file",
     "install": {
       "backend": "cd backend && py -m pip install -r requirements.txt",
@@ -67,7 +86,7 @@
     "Fixed Windows compatibility issues"
   ],
   "documentation": {
-    "detailed": "DOWNLOAD_v2.1.3.md",
-    "quick": "QUICKSTART_v2.1.3.md"
+    "detailed": "DOWNLOAD_v2.1.4.md",
+    "quick": "QUICKSTART_v2.1.4.md"
   }
 }
