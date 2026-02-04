@@ -13,7 +13,7 @@ echo ""
 # Configuration
 deployDir="deploy/windows"
 packageName="ocr-card-recognizer-windows-standard"
-version="v2.0.9"
+version="v2.1.0"
 packageDir="package-temp"
 
 # Clean up temp directory
@@ -28,6 +28,7 @@ cp "$deployDir/start.bat" "$packageDir/" 2>/dev/null || echo "Warning: start.bat
 cp "$deployDir/stop.bat" "$packageDir/" 2>/dev/null || echo "Warning: stop.bat not found"
 cp "$deployDir/check.bat" "$packageDir/" 2>/dev/null || echo "Warning: check.bat not found"
 cp "$deployDir/setup.bat" "$packageDir/" 2>/dev/null || echo "Warning: setup.bat not found"
+cp "$deployDir/fix-deps.bat" "$packageDir/" 2>/dev/null || echo "Warning: fix-deps.bat not found"
 
 # Copy documentation (simplified)
 cp "$deployDir/README.md" "$packageDir/" 2>/dev/null || echo "Warning: README.md not found"
@@ -73,7 +74,7 @@ cat > "$packageDir/README.txt" << 'EOF'
 OCR Card Recognizer - Standard Deployment
 ========================================
 
-Version: v2.0.8
+Version: v2.1.0
 
 Quick Start:
 -----------
@@ -82,6 +83,13 @@ Quick Start:
 2. Wait for installation to complete (5-10 minutes)
 3. Double-click start.bat
 4. Open browser and visit: http://localhost:5000
+
+Troubleshooting:
+---------------
+If backend fails to start with "ModuleNotFoundError":
+  1. Double-click fix-deps.bat (Run as administrator)
+  2. Wait for dependencies to install
+  3. Double-click start.bat again
 
 Usage:
 ------
@@ -95,6 +103,7 @@ Management:
 - Start service: Double-click start.bat
 - Stop service: Double-click stop.bat
 - Check status: Double-click check.bat
+- Fix dependencies: Double-click fix-deps.bat
 
 Documentation:
 --------------
