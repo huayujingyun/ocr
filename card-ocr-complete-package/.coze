@@ -1,0 +1,13 @@
+[project]
+entrypoint = "server.js"
+requires = ["nodejs-24", "python3"]
+
+[dev]
+build = ["bash", ".cozeproj/scripts/dev_build.sh"]
+run = ["bash", ".cozeproj/scripts/dev_run.sh"]
+deps = ["git", "python3", "python3-pip"] # -> apt install git python3 python3-pip
+
+[deploy]
+build = ["bash", ".cozeproj/scripts/deploy_build.sh"]
+run = ["bash", ".cozeproj/scripts/deploy_run.sh"]
+deps = ["git", "python3", "python3-pip"] # -> apt install git
