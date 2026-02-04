@@ -1,94 +1,98 @@
 @echo off
-chcp 65001 >nul
-title 购物卡/加油卡OCR识别系统 - 启动服务
+REM ========================================
+REM OCR Card Recognizer - Start Service
+REM ========================================
+REM
 
-echo =====================================
-echo 购物卡/加油卡OCR识别系统 - 启动服务
-echo =====================================
+title OCR Card Recognizer - Start Service
+
+echo ========================================
+echo OCR Card Recognizer - Start Service
+echo ========================================
 echo.
 
-REM 检查端口占用
-echo [检查] 检查端口占用...
+REM Check port usage
+echo [CHECK] Checking port usage...
 netstat -ano | findstr ":5000" >nul
 if %errorLevel% equ 0 (
-    echo [警告] 端口5000已被占用，前端可能已运行
+    echo [WARNING] Port 5000 is already in use, frontend may already be running
 )
 netstat -ano | findstr ":8001" >nul
 if %errorLevel% equ 0 (
-    echo [警告] 端口8001已被占用，后端可能已运行
-    echo 请先运行 stop.bat 停止现有服务
+    echo [WARNING] Port 8001 is already in use, backend may already be running
+    echo Please run stop.bat first to stop existing service
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 )
 
 echo.
-echo [启动] 正在启动后端服务...
+echo [START] Starting backend service...
 start "OCR Backend" /min cmd /c "cd backend && python main.py > ..\logs\backend.log 2>&1"
 
-echo [等待] 等待后端服务启动（首次启动需要下载OCR模型，约30-60秒）...
+echo [WAIT] Waiting for backend service to start (first startup requires downloading OCR models, ~30-60 seconds)...
 timeout /t 5 /nobreak >nul
 
-REM 检查后端是否启动成功
-echo [检查] 检查后端服务状态...
+REM Check if backend started successfully
+echo [CHECK] Checking backend service status...
 set /a counter=0
 :check_backend
 curl -s http://localhost:8001/health >nul 2>&1
 if %errorLevel% equ 0 (
-    echo [成功] 后端服务启动成功
+    echo [SUCCESS] Backend service started successfully
     goto start_frontend
 )
 set /a counter+=1
 if %counter% lss 12 (
-    echo [等待] 后端服务正在启动... (%counter%/12)
+    echo [WAIT] Backend service is starting... (%counter%/12)
     timeout /t 5 /nobreak >nul
     goto check_backend
 )
-echo [错误] 后端服务启动失败
+echo [ERROR] Backend service startup failed
 echo.
-echo 请检查日志: logs\backend.log
-echo 常见问题：
-echo   1. Python未正确安装
-echo   2. 缺少OpenCV依赖
-echo   3. 端口被占用
+echo Please check log: logs\backend.log
+echo Common issues:
+echo   1. Python is not installed correctly
+echo   2. Missing OpenCV dependencies
+echo   3. Port is occupied
 echo.
-echo 按任意键退出...
+echo Press any key to exit...
 pause >nul
 exit /b 1
 
 :start_frontend
 echo.
-echo [启动] 正在启动前端服务...
+echo [START] Starting frontend service...
 start "OCR Frontend" /min cmd /c "pnpm run dev --port 5000 > logs\frontend.log 2>&1"
 
-echo [等待] 等待前端服务启动（约10-30秒）...
+echo [WAIT] Waiting for frontend service to start (~10-30 seconds)...
 timeout /t 10 /nobreak >nul
 
-REM 检查前端是否启动成功
-echo [检查] 检查前端服务状态...
+REM Check if frontend started successfully
+echo [CHECK] Checking frontend service status...
 curl -s http://localhost:5000 >nul 2>&1
 if %errorLevel% equ 0 (
-    echo [成功] 前端服务启动成功
+    echo [SUCCESS] Frontend service started successfully
 ) else (
-    echo [警告] 前端服务可能还在启动中
-    echo 如果浏览器无法访问，请等待30秒后重试
+    echo [WARNING] Frontend service may still be starting
+    echo If browser cannot access, please wait 30 seconds and try again
 )
 
 echo.
-echo =====================================
-echo 服务启动完成！
-echo =====================================
+echo ========================================
+echo Service Started!
+echo ========================================
 echo.
-echo 访问地址：
-echo   前端界面: http://localhost:5000
-echo   后端API:  http://localhost:8001/docs
+echo Access URLs:
+echo   Frontend: http://localhost:5000
+echo   Backend API: http://localhost:8001/docs
 echo.
-echo 管理命令：
-echo   查看后端日志: type logs\backend.log
-echo   查看前端日志: type logs\frontend.log
-echo   停止服务: 双击 stop.bat
-echo   检查状态: 双击 check.bat
+echo Management:
+echo   View backend log: type logs\backend.log
+echo   View frontend log: type logs\frontend.log
+echo   Stop service: Double-click stop.bat
+echo   Check status: Double-click check.bat
 echo.
-echo 按任意键关闭此窗口（服务将继续在后台运行）...
+echo Press any key to close this window (service will continue running in background)...
 pause >nul

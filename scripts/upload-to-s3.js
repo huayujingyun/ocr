@@ -18,8 +18,8 @@ async function uploadDeploymentPackage() {
     });
 
     // 读取部署包文件
-    const filePath = path.join(__dirname, "../ocr-card-recognizer-windows-standard-v2.0.2.tar.gz");
-    const fileName = "ocr-card-recognizer-windows-standard-v2.0.2.tar.gz";
+    const filePath = path.join(__dirname, "../ocr-card-recognizer-windows-standard-v2.0.3.tar.gz");
+    const fileName = "ocr-card-recognizer-windows-standard-v2.0.3.tar.gz";
 
     console.log(`Reading file: ${filePath}`);
     const fileContent = fs.readFileSync(filePath);
@@ -53,7 +53,7 @@ async function uploadDeploymentPackage() {
 
     // 保存下载链接到文件
     const downloadInfo = {
-      version: "v2.0.2",
+      version: "v2.0.3",
       fileName: fileName,
       fileKey: fileKey,
       downloadUrl: downloadUrl,

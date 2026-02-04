@@ -1,202 +1,207 @@
 @echo off
-chcp 65001 >nul
-echo =====================================
-echo 购物卡/加油卡OCR识别系统 - Windows安装程序
-echo 版本: v2.0.1
-echo =====================================
-echo.
+REM ========================================
+REM OCR Card Recognizer - Windows Installer
+REM Version: v2.0.2
+REM ========================================
+REM
 
-REM 检查管理员权限
+REM Check administrator privileges
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    echo [错误] 请以管理员身份运行此脚本
-    echo 右键点击 install.bat，选择"以管理员身份运行"
+    echo [ERROR] Please run this script as Administrator
+    echo Right-click on install.bat and select "Run as administrator"
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 )
 
-echo [步骤 1/7] 检查系统要求...
+echo ========================================
+echo OCR Card Recognizer - Installer
+echo Version: v2.0.2
+echo ========================================
 echo.
 
-REM 检查操作系统版本
+echo [Step 1/7] Checking system requirements...
+echo.
+
+REM Check OS version
 ver | findstr /i "10\.0\|6\.3\|6\.2" >nul
 if %errorLevel% neq 0 (
-    echo [警告] 此安装程序适用于 Windows 8/10/11
-    echo 其他版本可能存在兼容性问题
+    echo [WARNING] This installer is for Windows 8/10/11
+    echo Other versions may have compatibility issues
 ) else (
-    echo 操作系统: Windows 8/10/11
+    echo Operating System: Windows 8/10/11
 )
 
 echo.
-echo [步骤 2/7] 检查Python安装...
+echo [Step 2/7] Checking Python installation...
 python --version >nul 2>&1
 if %errorLevel% neq 0 (
-    echo [错误] Python未安装
+    echo [ERROR] Python is not installed
     echo.
-    echo 请按以下步骤安装Python：
-    echo 1. 访问: https://www.python.org/downloads/release/python-3128/
-    echo 2. 下载: Windows installer (64-bit)
-    echo 3. 运行安装程序
-    echo 4. 重要: 勾选 "Add Python to PATH"
-    echo 5. 点击 "Install Now"
+    echo Please install Python:
+    echo 1. Visit: https://www.python.org/downloads/release/python-3128/
+    echo 2. Download: Windows installer (64-bit)
+    echo 3. Run the installer
+    echo 4. IMPORTANT: Check "Add Python to PATH"
+    echo 5. Click "Install Now"
     echo.
-    echo 安装完成后，请重新运行此脚本
+    echo After installation, please run this script again
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 ) else (
     for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
-    echo Python版本: %PYTHON_VERSION%
+    echo Python version: %PYTHON_VERSION%
 )
 
 echo.
-echo [步骤 3/7] 检查Node.js安装...
+echo [Step 3/7] Checking Node.js installation...
 node --version >nul 2>&1
 if %errorLevel% neq 0 (
-    echo [错误] Node.js未安装
+    echo [ERROR] Node.js is not installed
     echo.
-    echo 请按以下步骤安装Node.js：
-    echo 1. 访问: https://nodejs.org/
-    echo 2. 下载: LTS版本 (推荐 Node.js 20 LTS)
-    echo 3. 运行安装程序
-    echo 4. 点击 "Install" 完成安装
+    echo Please install Node.js:
+    echo 1. Visit: https://nodejs.org/
+    echo 2. Download: LTS version (recommended Node.js 20 LTS)
+    echo 3. Run the installer
+    echo 4. Click "Install" to complete
     echo.
-    echo 安装完成后，请重新运行此脚本
+    echo After installation, please run this script again
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 ) else (
     for /f "tokens=*" %%i in ('node --version') do set NODE_VERSION=%%i
-    echo Node.js版本: %NODE_VERSION%
+    echo Node.js version: %NODE_VERSION%
 )
 
 echo.
-echo [步骤 4/7] 安装pnpm...
+echo [Step 4/7] Installing pnpm...
 pnpm --version >nul 2>&1
 if %errorLevel% neq 0 (
-    echo 正在安装pnpm...
+    echo Installing pnpm...
     npm install -g pnpm
     if %errorLevel% neq 0 (
-        echo [错误] pnpm安装失败
+        echo [ERROR] pnpm installation failed
         echo.
-        echo 按任意键退出...
+        echo Press any key to exit...
         pause >nul
         exit /b 1
     )
 ) else (
     for /f "tokens=*" %%i in ('pnpm --version') do set PNPM_VERSION=%%i
-    echo pnpm已安装，版本: %PNPM_VERSION%
+    echo pnpm already installed, version: %PNPM_VERSION%
 )
 
 echo.
-echo [步骤 5/7] 安装后端依赖...
+echo [Step 5/7] Installing backend dependencies...
 cd backend
-echo 正在检查backend目录...
+echo Checking backend directory...
 if not exist "requirements.txt" (
-    echo [错误] 找不到 requirements.txt 文件
-    echo 请确保您在正确的目录中运行此脚本
+    echo [ERROR] requirements.txt not found
+    echo Please make sure you are running this script in the correct directory
     cd ..
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 )
 
-echo 正在安装Python依赖（这可能需要几分钟）...
+echo Installing Python dependencies (this may take a few minutes)...
 pip install -r requirements.txt
 if %errorLevel% neq 0 (
-    echo [错误] Python依赖安装失败
+    echo [ERROR] Python dependencies installation failed
     echo.
-    echo 可能的解决方案：
-    echo 1. 检查网络连接
-    echo 2. 尝试更新pip: python -m pip install --upgrade pip
-    echo 3. 使用国内镜像源: pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+    echo Possible solutions:
+    echo 1. Check network connection
+    echo 2. Try updating pip: python -m pip install --upgrade pip
+    echo 3. Use domestic mirror: pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     echo.
     cd ..
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 )
-echo Python依赖安装完成
+echo Python dependencies installed successfully
 cd ..
 
 echo.
-echo [步骤 6/7] 安装前端依赖...
-echo 正在检查前端文件...
+echo [Step 6/7] Installing frontend dependencies...
+echo Checking frontend files...
 if not exist "package.json" (
-    echo [错误] 找不到 package.json 文件
-    echo 请确保您在正确的目录中运行此脚本
+    echo [ERROR] package.json not found
+    echo Please make sure you are running this script in the correct directory
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 )
 
-echo 正在安装Node.js依赖（这可能需要几分钟）...
+echo Installing Node.js dependencies (this may take a few minutes)...
 pnpm install
 if %errorLevel% neq 0 (
-    echo [错误] Node.js依赖安装失败
+    echo [ERROR] Node.js dependencies installation failed
     echo.
-    echo 可能的解决方案：
-    echo 1. 检查网络连接
-    echo 2. 清除缓存: pnpm store prune
-    echo 3. 使用国内镜像源: pnpm config set registry https://registry.npmmirror.com
+    echo Possible solutions:
+    echo 1. Check network connection
+    echo 2. Clear cache: pnpm store prune
+    echo 3. Use domestic mirror: pnpm config set registry https://registry.npmmirror.com
     echo.
-    echo 按任意键退出...
+    echo Press any key to exit...
     pause >nul
     exit /b 1
 )
-echo Node.js依赖安装完成
+echo Node.js dependencies installed successfully
 
 echo.
-echo 正在构建前端...
+echo Building frontend...
 pnpm run build
 if %errorLevel% neq 0 (
-    echo [警告] 前端构建失败
-    echo 这通常不影响使用，前端将在首次启动时构建
-    echo 如果后续遇到问题，请手动运行: pnpm run build
+    echo [WARNING] Frontend build failed
+    echo This usually doesn't affect usage, frontend will be built on first startup
+    echo If you encounter issues later, manually run: pnpm run build
 ) else (
-    echo 前端构建完成
+    echo Frontend built successfully
 )
 
 echo.
-echo [步骤 7/7] 创建必要的目录...
+echo [Step 7/7] Creating necessary directories...
 if not exist "logs" (
     mkdir logs
-    echo 创建目录: logs\
+    echo Created directory: logs\
 )
 if not exist "data\uploads" (
     mkdir data\uploads
-    echo 创建目录: data\uploads\
+    echo Created directory: data\uploads\
 )
 if not exist "data\exports" (
     mkdir data\exports
-    echo 创建目录: data\exports\
+    echo Created directory: data\exports\
 )
 
 echo.
-echo =====================================
-echo 安装完成！
-echo =====================================
+echo ========================================
+echo Installation Complete!
+echo ========================================
 echo.
-echo 使用说明：
-echo   1. 双击 start.bat 启动服务
-echo   2. 双击 stop.bat 停止服务
-echo   3. 双击 check.bat 检查服务状态
-echo   4. 访问 http://localhost:5000 使用系统
+echo Usage:
+echo   1. Double-click start.bat to start the service
+echo   2. Double-click stop.bat to stop the service
+echo   3. Double-click check.bat to check service status
+echo   4. Visit http://localhost:5000 to use the system
 echo.
-echo 注意事项：
-echo   - 首次启动需要下载OCR模型（约200MB），请耐心等待
-echo   - 首次启动可能需要30-60秒
-echo   - 后续启动只需要10-20秒
+echo Notes:
+echo   - First startup requires downloading OCR models (~200MB), please be patient
+echo   - First startup may take 30-60 seconds
+echo   - Subsequent startups only take 10-20 seconds
 echo.
-echo 如果遇到问题，请查看：
-echo   - logs\backend.log（后端日志）
-echo   - logs\frontend.log（前端日志）
+echo If you encounter issues, please check:
+echo   - logs\backend.log (backend log)
+echo   - logs\frontend.log (frontend log)
 echo.
-echo 按任意键退出...
+echo Press any key to exit...
 pause >nul

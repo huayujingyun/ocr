@@ -1,42 +1,46 @@
 @echo off
-chcp 65001 >nul
-title 服务状态检查
+REM ========================================
+REM OCR Card Recognizer - Check Status
+REM ========================================
+REM
 
-echo =====================================
-echo 服务状态检查
-echo =====================================
+title OCR Card Recognizer - Check Status
+
+echo ========================================
+echo Service Status Check
+echo ========================================
 echo.
 
-echo [检查] 后端服务（端口8001）...
+echo [CHECK] Backend service (port 8001)...
 netstat -ano | findstr ":8001" | findstr "LISTENING" >nul
 if %errorLevel% equ 0 (
-    echo [运行中] 后端服务
+    echo [RUNNING] Backend service
     for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8001" ^| findstr "LISTENING"') do (
-        echo         进程ID: %%a
+        echo         Process ID: %%a
         tasklist /FI "PID eq %%a" /FO TABLE /NH
     )
     echo.
     curl -s http://localhost:8001/health
     echo.
 ) else (
-    echo [停止] 后端服务
+    echo [STOPPED] Backend service
 )
 
 echo.
-echo [检查] 前端服务（端口5000）...
+echo [CHECK] Frontend service (port 5000)...
 netstat -ano | findstr ":5000" | findstr "LISTENING" >nul
 if %errorLevel% equ 0 (
-    echo [运行中] 前端服务
+    echo [RUNNING] Frontend service
     for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5000" ^| findstr "LISTENING"') do (
-        echo         进程ID: %%a
+        echo         Process ID: %%a
         tasklist /FI "PID eq %%a" /FO TABLE /NH
     )
-    echo         访问地址: http://localhost:5000
+    echo         Access URL: http://localhost:5000
 ) else (
-    echo [停止] 前端服务
+    echo [STOPPED] Frontend service
 )
 
 echo.
-echo =====================================
-echo 按任意键退出...
+echo ========================================
+echo Press any key to exit...
 pause >nul

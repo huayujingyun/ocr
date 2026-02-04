@@ -1,34 +1,38 @@
 @echo off
-chcp 65001 >nul
-title 停止OCR识别服务
+REM ========================================
+REM OCR Card Recognizer - Stop Service
+REM ========================================
+REM
 
-echo =====================================
-echo 停止购物卡/加油卡OCR识别服务
-echo =====================================
+title OCR Card Recognizer - Stop Service
+
+echo ========================================
+echo Stop OCR Card Recognizer Service
+echo ========================================
 echo.
 
-echo [停止] 正在停止前端服务（端口5000）...
+echo [STOP] Stopping frontend service (port 5000)...
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5000" ^| findstr "LISTENING"') do (
     taskkill /F /PID %%a 2>nul
-    echo 已终止PID %%a
+    echo Terminated PID %%a
 )
 
 echo.
-echo [停止] 正在停止后端服务（端口8001）...
+echo [STOP] Stopping backend service (port 8001)...
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8001" ^| findstr "LISTENING"') do (
     taskkill /F /PID %%a 2>nul
-    echo 已终止PID %%a
+    echo Terminated PID %%a
 )
 
 echo.
-echo [清理] 清理进程残留...
+echo [CLEAN] Cleaning up process remnants...
 taskkill /F /IM python.exe 2>nul
 taskkill /F /IM node.exe 2>nul
 
 echo.
-echo =====================================
-echo 服务已停止
-echo =====================================
+echo ========================================
+echo Service Stopped
+echo ========================================
 echo.
-echo 按任意键退出...
+echo Press any key to exit...
 pause >nul

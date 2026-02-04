@@ -13,7 +13,7 @@ echo ""
 # Configuration
 deployDir="deploy/windows"
 packageName="ocr-card-recognizer-windows-standard"
-version="v2.0.2"
+version="v2.0.3"
 packageDir="package-temp"
 
 # Clean up temp directory
@@ -72,7 +72,7 @@ cat > "$packageDir/README.txt" << 'EOF'
 OCR Card Recognizer - Standard Deployment
 ========================================
 
-Version: v2.0.2
+Version: v2.0.3
 
 Quick Start:
 -----------
