@@ -1,87 +1,47 @@
-# Node modules
+# 依赖
 node_modules
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# Next.js
-.next/
-out/
-build/
-dist/
+# 构建输出
+.next
+out
+build
+dist
 
-# Testing
-coverage/
-.nyc_output
-
-# Misc
-.DS_Store
-*.pem
-
-# Debug
-*.log
-logs/
-*.log.*
-
-# Environment files
+# 环境变量
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Vercel
-.vercel
-
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-
-# Git
-.git
-.gitignore
-
-# Docker
-Dockerfile
-*.dockerfile
-docker-compose*.yml
-.dockerignore
-
-# Docs
-*.md
-docs/
-README*
-
-# Scripts
-scripts/
-*.sh
-*.bat
-
-# Logs
-logs/
-*.log
-
-# Data
-data/
-tmp/
-
-# Cache
-.cache/
-.parcel-cache/
-.turbo/
+.env.production
 
 # IDE
-.vscode/
-.idea/
+.vscode
+.idea
 *.swp
 *.swo
 *~
 
 # OS
-Thumbs.db
 .DS_Store
+Thumbs.db
 
-# Deployment
-card-ocr-deployment-*
-card-ocr-complete-*
+# Git
+.git
+.gitignore
+
+# 部署文件
+DEPLOY.md
+FILES.txt
+check-deploy.sh
+start.sh
+
+# 测试
+coverage
+.nyc_output
+
+# 其他
+*.log
+tmp
+temp
