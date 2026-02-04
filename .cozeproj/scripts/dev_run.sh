@@ -31,6 +31,19 @@ kill_port_if_listening() {
     fi
 }
 
+# 安装OpenCV系统依赖
+install_opencv_deps() {
+    echo "Checking OpenCV system dependencies..."
+    if ! ldconfig -p 2>/dev/null | grep -q libGL.so.1; then
+        echo "Installing OpenCV dependencies..."
+        apt-get update -qq
+        apt-get install -y -qq libgl1 libglib2.0-0 libsm6 libxext6 libxrender1 libgthread-2.0-0
+        echo "✓ OpenCV dependencies installed"
+    else
+        echo "✓ OpenCV dependencies already installed"
+    fi
+}
+
 # 启动Python后端服务
 start_backend() {
     echo "==================================="
@@ -42,6 +55,9 @@ start_backend() {
         echo "Error: python3 not found. Please install Python 3.8+"
         exit 1
     fi
+
+    # 安装OpenCV系统依赖
+    install_opencv_deps
 
     # 检查依赖
     if ! python3 -c "import paddleocr" 2>/dev/null; then
