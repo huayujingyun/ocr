@@ -1,15 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LLMClient, Config } from 'coze-coding-dev-sdk';
 
-// 懒加载客户端，避免在构建时初始化
-let client: LLMClient | null = null;
+// PaddleOCR本地服务配置
+const PADDLEOCR_API_URL = process.env.PADDLEOCR_API_URL || 'http://localhost:8001';
 
-function getClient(): LLMClient {
-  if (!client) {
-    const config = new Config();
-    client = new LLMClient(config);
-  }
-  return client;
+// OCR识别请求接口
+interface RecognitionRequest {
+  image: string;
+  preprocess?: string;
+}
+
+// OCR识别响应接口
+interface RecognitionResponse {
+  success: boolean;
+  text: string;
+  message?: string;
+}
+
+// 批量识别请求接口
+interface BatchRecognitionRequest {
+  images: string[];
+  preprocess?: string;
+}
+
+// 批量识别响应接口
+interface BatchRecognitionResponse {
+  success: boolean;
+  results: string[];
+  message?: string;
 }
 
 interface CardData {
@@ -19,63 +36,74 @@ interface CardData {
   passwordImage?: string;
 }
 
-// 辅助函数：确保base64字符串带前缀
-function ensureImagePrefix(base64Data: string): string {
-  if (!base64Data.startsWith('data:image/')) {
-    return `data:image/jpeg;base64,${base64Data}`;
+// OCR识别函数 - 调用本地PaddleOCR服务
+async function recognizeText(image: string, preprocess: string = 'grayscale'): Promise<string> {
+  try {
+    const requestBody: RecognitionRequest = {
+      image: image,
+      preprocess: preprocess
+    };
+
+    const response = await fetch(`${PADDLEOCR_API_URL}/api/ocr/recognize`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+      signal: AbortSignal.timeout(30000), // 30秒超时
+    });
+
+    if (!response.ok) {
+      throw new Error(`OCR服务返回错误: ${response.status}`);
+    }
+
+    const result: RecognitionResponse = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.message || '识别失败');
+    }
+
+    // PaddleOCR已经去除了空格，直接返回
+    return result.text;
+
+  } catch (error) {
+    console.error('【PaddleOCR识别失败】', error);
+    throw error;
   }
-  return base64Data;
 }
 
-// OCR识别函数 - 专门识别小图中的文字
-async function recognizeText(image: string): Promise<string> {
-  const systemPrompt = `请精确识别图片中的文字内容。
-只返回识别到的文字，不要包含任何说明、解释或其他内容。
-如果是数字，请确保0和9、1和7、3和9、5和6等易混淆数字的准确性。
-不要在数字之间添加任何空格。`;
-
-  const imageWithPrefix = ensureImagePrefix(image);
-
-  const messages: any[] = [
-    { role: 'system', content: systemPrompt },
-    {
-      role: 'user',
-      content: [
-        { type: 'text', text: '识别图片中的文字' },
-        {
-          type: 'image_url',
-          image_url: { url: imageWithPrefix, detail: 'low' },
-        },
-      ],
-    },
-  ];
-
-  // 添加超时控制
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => reject(new Error('识别超时')), 15000); // 15秒超时
-  });
-
+// 批量OCR识别函数
+async function recognizeBatch(images: string[], preprocess: string = 'grayscale'): Promise<string[]> {
   try {
-    const response = await Promise.race([
-      getClient().invoke(messages, {
-        model: 'doubao-seed-1-6-vision-250815',
-        temperature: 0.1,
-      }),
-      timeoutPromise
-    ]) as any;
+    const requestBody: BatchRecognitionRequest = {
+      images: images,
+      preprocess: preprocess
+    };
 
-    const content = response.content.trim();
+    const response = await fetch(`${PADDLEOCR_API_URL}/api/ocr/batch`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+      signal: AbortSignal.timeout(60000), // 60秒超时
+    });
 
-    // 去除可能的markdown代码块标记
-    const cleaned = content.replace(/^```[\s\S]*?\n/, '').replace(/```$/, '').trim();
+    if (!response.ok) {
+      throw new Error(`OCR服务返回错误: ${response.status}`);
+    }
 
-    // 去除所有空格（包括中间的空格）
-    const noSpaces = cleaned.replace(/\s+/g, '');
+    const result: BatchRecognitionResponse = await response.json();
 
-    return noSpaces;
+    if (!result.success) {
+      throw new Error(result.message || '批量识别失败');
+    }
+
+    return result.results;
+
   } catch (error) {
-    console.error('【文字识别失败】', error);
-    throw error; // 抛出错误，让调用者处理
+    console.error('【批量识别失败】', error);
+    throw error;
   }
 }
 
@@ -84,36 +112,29 @@ async function recognizeWithCroppedImages(
   croppedImages: Array<{ label: string; imageData: string }>
 ): Promise<CardData | null> {
   try {
-    console.log(`【模板识别】开始识别，共 ${croppedImages.length} 个区域（并行处理）`);
+    console.log(`【模板识别】开始识别，共 ${croppedImages.length} 个区域`);
 
-    // 并行识别所有区域，使用 allSettled 处理部分失败
-    const recognitionPromises = croppedImages.map(async (item) => {
-      const startTime = Date.now();
-      try {
-        const text = await recognizeText(item.imageData);
-        const elapsed = Date.now() - startTime;
-        console.log(`  📝 识别区域 "${item.label}": "${text}" (耗时: ${elapsed}ms)`);
-        return { label: item.label, text, success: true };
-      } catch (error) {
-        const elapsed = Date.now() - startTime;
-        console.error(`  ❌ 识别区域 "${item.label}" 失败:`, error);
-        return { label: item.label, text: '', success: false };
-      }
-    });
+    const startTime = Date.now();
 
-    const results = await Promise.allSettled(recognitionPromises);
+    // 使用批量识别API，提高效率
+    const imageList = croppedImages.map(item => item.imageData);
+    const results = await recognizeBatch(imageList, 'grayscale');
+
+    const elapsed = Date.now() - startTime;
+    console.log(`【模板识别】批量识别完成，耗时: ${elapsed}ms`);
 
     // 构建结果字典
     const resultsMap: { [key: string]: string } = {};
     let successCount = 0;
 
-    results.forEach((result) => {
-      if (result.status === 'fulfilled' && result.value.success) {
-        const text = result.value.text.trim();
-        if (text) {  // 只保存非空结果
-          resultsMap[result.value.label] = text;
-          successCount++;
-        }
+    croppedImages.forEach((item, index) => {
+      const text = results[index] || '';
+      if (text) {
+        resultsMap[item.label] = text;
+        successCount++;
+        console.log(`  📝 识别区域 "${item.label}": "${text}"`);
+      } else {
+        console.log(`  ❌ 识别区域 "${item.label}" 失败或结果为空`);
       }
     });
 
@@ -142,109 +163,70 @@ async function recognizeWithCroppedImages(
   }
 }
 
-// 传统OCR识别（不使用模板）
+// 传统OCR识别（不使用模板）- 使用PaddleOCR识别整张图片，然后用正则提取卡号和密码
 async function recognizeTraditional(image: string): Promise<CardData[] | null> {
   try {
-    const systemPrompt = `提取图片中的卡号和密码。
-
-卡号：10-19位数字
-密码：4-12位数字或字母
-
-重要：卡号和密码不要包含任何空格！
-
-严格按照以下JSON格式输出（不要其他文字）：
-{
-  "cards": [{
-    "cardNumber": "卡号",
-    "password": "密码"
-  }]
-}`;
-
-    const imageWithPrefix = ensureImagePrefix(image);
-
-    const messages: any[] = [
-      { role: 'system', content: systemPrompt },
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: '识别这张图片' },
-          {
-            type: 'image_url',
-            image_url: { url: imageWithPrefix, detail: 'low' },
-          },
-        ],
-      },
-    ];
-
-    // 添加超时控制
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('识别超时')), 25000); // 25秒超时，传统OCR时间更长
-    });
+    console.log('【传统OCR】开始识别整张图片...');
 
     const startTime = Date.now();
-    const response = await Promise.race([
-      getClient().invoke(messages, {
-        model: 'doubao-seed-1-6-vision-250815',
-        temperature: 0.1,
-      }),
-      timeoutPromise
-    ]) as any;
+
+    // 使用PaddleOCR识别整张图片
+    const fullText = await recognizeText(image, 'grayscale');
+
     const elapsed = Date.now() - startTime;
     console.log(`【传统OCR】耗时: ${elapsed}ms`);
+    console.log('【识别到的文字】', fullText);
 
-    const content = response.content.trim();
-    console.log('【AI返回内容】', content);
+    // 使用正则表达式提取卡号和密码
+    // 卡号：10-19位连续数字
+    const cardNumberPattern = /\b\d{10,19}\b/g;
+    // 密码：4-12位连续数字或字母
+    const passwordPattern = /\b[a-zA-Z0-9]{4,12}\b/g;
 
-    // 尝试解析JSON
-    let jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+    const cardNumbers = fullText.match(cardNumberPattern) || [];
+    const passwords = fullText.match(passwordPattern) || [];
 
-    if (!jsonMatch) {
-      // 尝试直接匹配JSON
-      jsonMatch = content.match(/\{[\s\S]*\}/);
-    }
+    // 过滤掉可能是卡号的密码（密码通常是较短的数字字母组合）
+    const filteredPasswords = passwords.filter(p => {
+      // 排除纯数字且长度>=10的（可能是卡号）
+      if (/^\d+$/.test(p) && p.length >= 10) {
+        return false;
+      }
+      return true;
+    });
 
-    if (!jsonMatch) {
-      console.error('【AI返回格式错误】无法解析JSON，原始内容:', content);
+    console.log(`【提取结果】卡号数量: ${cardNumbers.length}, 密码数量: ${filteredPasswords.length}`);
+    console.log('【提取的卡号】', cardNumbers);
+    console.log('【提取的密码】', filteredPasswords);
+
+    if (cardNumbers.length === 0 && filteredPasswords.length === 0) {
+      console.warn('【传统OCR】未识别到卡号或密码');
       return null;
     }
 
-    const jsonString = jsonMatch[1] || jsonMatch[0];
-    console.log('【解析后的JSON字符串】', jsonString);
+    // 构建卡片数据（取第一个卡号和第一个密码）
+    const cards: CardData[] = [];
+    const cardNumber = cardNumbers[0] || '';
+    const password = filteredPasswords[0] || '';
 
-    let parsed: any;
-    try {
-      parsed = JSON.parse(jsonString);
-    } catch (parseError) {
-      console.error('【JSON解析失败】', parseError);
-      return null;
+    if (cardNumber || password) {
+      cards.push({
+        cardNumber,
+        password,
+      });
     }
 
-    if (!parsed.cards || !Array.isArray(parsed.cards)) {
-      console.error('【数据格式错误】缺少cards数组，解析结果:', parsed);
-      return null;
-    }
+    console.log(`【传统OCR】完成，识别到 ${cards.length} 张卡片`);
+    return cards;
 
-    if (parsed.cards.length === 0) {
-      console.warn('【数据为空】cards数组为空');
-      return null;
+  } catch (error) {
+    console.error('【传统OCR失败】', error);
+    return null;
+  }
+}
     }
 
     const cards: CardData[] = parsed.cards.map((card: any) => {
-      const cardNumber = (card.cardNumber || '').replace(/\s+/g, '');
-      const password = (card.password || '').replace(/\s+/g, '');
-
-      console.log(`  卡片: 卡号="${cardNumber}", 密码="${password}"`);
-
-      return {
-        cardNumber,
-        password,
-        cardNumberImage: imageWithPrefix,
-        passwordImage: imageWithPrefix,
-      };
-    });
-
-    console.log(`【传统OCR】成功识别 ${cards.length} 张卡片`);
-    return cards;
   } catch (error) {
     console.error('【传统OCR失败】', error);
     return null;
