@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // PaddleOCR本地服务配置
-const PADDLEOCR_API_URL = process.env.PADDLEOCR_API_URL || 'http://localhost:8001';
+const PADDLEOCR_API_URL = process.env.PADDLEOCR_API_URL || 'http://localhost:8000';
 
 // OCR识别请求接口
 interface RecognitionRequest {
