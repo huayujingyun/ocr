@@ -50,24 +50,65 @@ export function normalizeLabel(label: string): 'cardNumber' | 'password' {
 }
 
 /**
+ * 日志级别
+ */
+type LogLevel = 'none' | 'error' | 'warn' | 'info' | 'debug';
+
+/**
+ * 获取当前日志级别
+ */
+function getLogLevel(): LogLevel {
+  // 从环境变量或 localStorage 读取
+  if (typeof window !== 'undefined') {
+    const savedLevel = localStorage.getItem('log-level') as LogLevel;
+    if (savedLevel && ['none', 'error', 'warn', 'info', 'debug'].includes(savedLevel)) {
+      return savedLevel;
+    }
+  }
+  // 默认只显示错误和警告
+  return 'warn';
+}
+
+/**
  * 日志工具
  */
 export const logger = {
+  setLevel: (level: LogLevel) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('log-level', level);
+    }
+  },
+  getLevel: () => getLogLevel(),
+
   info: (message: string, data?: any) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getLogLevel() === 'none') return;
+    // 只在 debug 级别显示详细日志
+    if (getLogLevel() === 'debug' && process.env.NODE_ENV === 'development') {
       console.log(`[INFO] ${message}`, data || '');
     }
   },
+
   error: (message: string, error?: any) => {
+    if (getLogLevel() === 'none') return;
     console.error(`[ERROR] ${message}`, error || '');
   },
+
   warn: (message: string, data?: any) => {
+    if (getLogLevel() === 'none') return;
     console.warn(`[WARN] ${message}`, data || '');
   },
+
   debug: (message: string, data?: any) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (getLogLevel() === 'none') return;
+    if (getLogLevel() === 'debug' && process.env.NODE_ENV === 'development') {
       console.log(`[DEBUG] ${message}`, data || '');
     }
+  },
+
+  // 专门用于显示关键统计信息（识别数量等）
+  stats: (message: string, data?: any) => {
+    if (getLogLevel() === 'none') return;
+    console.log(`[STATS] ${message}`, data || '');
   }
 };
 

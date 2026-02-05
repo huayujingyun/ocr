@@ -160,15 +160,12 @@ function enhanceContrast(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2
 // 条码识别函数
 const recognizeBarcode = async (imageData: string): Promise<string | null> => {
   return new Promise((resolve) => {
-    logger.info('开始条码识别');
-
     const img = new Image();
     img.crossOrigin = 'anonymous';
 
     img.onload = async () => {
       try {
         if (img.width < 20 || img.height < 20) {
-          logger.error('图片尺寸太小，无法识别');
           document.body.removeChild(img);
           resolve(null);
           return;
@@ -177,7 +174,6 @@ const recognizeBarcode = async (imageData: string): Promise<string | null> => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-          logger.error('无法创建canvas context');
           document.body.removeChild(img);
           resolve(null);
           return;
@@ -209,7 +205,6 @@ const recognizeBarcode = async (imageData: string): Promise<string | null> => {
             try {
               const result = await reader.decodeFromImageElement(scaledImg);
               const decodedText = result.getText();
-              logger.info(`条码识别成功: ${decodedText}`);
 
               document.body.removeChild(scaledImg);
               document.body.removeChild(img);
@@ -222,11 +217,10 @@ const recognizeBarcode = async (imageData: string): Promise<string | null> => {
           }
         }
 
-        logger.error('所有策略识别失败');
         document.body.removeChild(img);
         resolve(null);
       } catch (error) {
-        logger.error('条码识别过程出错', error);
+        logger.error('条码识别过程出错');
         if (document.body.contains(img)) {
           document.body.removeChild(img);
         }
@@ -235,7 +229,6 @@ const recognizeBarcode = async (imageData: string): Promise<string | null> => {
     };
 
     img.onerror = () => {
-      logger.error('图片加载失败');
       if (document.body.contains(img)) {
         document.body.removeChild(img);
       }
@@ -253,8 +246,6 @@ async function recognizeBox(
   box: TemplateBox,
   croppedImage: string
 ): Promise<{ label: string; value: string } | null> {
-  logger.info(`识别区域: ${box.label}, 模式: ${box.recognizeMode}`);
-
   if (box.recognizeMode === 'barcode') {
     const barcodeResult = await recognizeBarcode(croppedImage);
     if (barcodeResult) {
@@ -279,15 +270,14 @@ async function recognizeBox(
     );
 
     if (!response.ok) {
-      const errorText = await response.text();
-      logger.error(`OCR识别失败: ${errorText}`);
+      logger.error('OCR请求失败');
       return null;
     }
 
     const data = await response.json();
 
     if (data.error) {
-      logger.error(`OCR返回错误: ${data.error}`);
+      logger.error('OCR返回错误');
       return null;
     }
 
@@ -298,7 +288,7 @@ async function recognizeBox(
 
     return null;
   } catch (error) {
-    logger.error('OCR识别出错', error);
+    logger.error('OCR识别出错');
     return null;
   }
 }
@@ -382,6 +372,9 @@ export default function CardOCRPage() {
             setError('');
           }
           setSelectedImages(prev => [...prev, ...newImages]);
+          if (newImages.length > 0) {
+            logger.stats(`已添加 ${newImages.length} 张图片`);
+          }
         }
       };
 
@@ -410,7 +403,6 @@ export default function CardOCRPage() {
       return;
     }
 
-    logger.info(`开始识别流程，共 ${selectedImages.length} 张图片`);
     setIsLoading(true);
     setError('');
 
@@ -485,7 +477,7 @@ export default function CardOCRPage() {
       setProcessingIndex(-1);
 
       const successCount = selectedImages.filter(img => img.recognizeStatus === 'success').length;
-      logger.info(`识别完成: 成功 ${successCount}, 失败 ${failedImages.length}`);
+      logger.stats(`识别完成: 成功 ${successCount}/${selectedImages.length}, 失败 ${failedImages.length}`);
 
       if (failedImages.length > 0) {
         setError(`以下图片识别失败: ${failedImages.join(', ')}`);
