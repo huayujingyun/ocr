@@ -112,16 +112,9 @@ async function recognizeWithCroppedImages(
   croppedImages: Array<{ label: string; imageData: string }>
 ): Promise<CardData | null> {
   try {
-    console.log(`【模板识别】开始识别，共 ${croppedImages.length} 个区域`);
-
-    const startTime = Date.now();
-
     // 使用批量识别API，提高效率
     const imageList = croppedImages.map(item => item.imageData);
     const results = await recognizeBatch(imageList, 'grayscale');
-
-    const elapsed = Date.now() - startTime;
-    console.log(`【模板识别】批量识别完成，耗时: ${elapsed}ms`);
 
     // 构建结果字典
     const resultsMap: { [key: string]: string } = {};
@@ -132,14 +125,8 @@ async function recognizeWithCroppedImages(
       if (text) {
         resultsMap[item.label] = text;
         successCount++;
-        console.log(`  📝 识别区域 "${item.label}": "${text}"`);
-      } else {
-        console.log(`  ❌ 识别区域 "${item.label}" 失败或结果为空`);
       }
     });
-
-    console.log(`【模板识别】成功识别 ${successCount}/${croppedImages.length} 个区域`);
-    console.log(`【识别结果】卡号="${resultsMap['卡号'] || resultsMap['cardNumber'] || ''}", 密码="${resultsMap['密码'] || resultsMap['password'] || ''}"`);
 
     // 构建卡片数据
     const cardData: CardData = {
@@ -151,14 +138,12 @@ async function recognizeWithCroppedImages(
 
     // 检查是否有有效结果
     if (!cardData.cardNumber && !cardData.password) {
-      console.log('【模板识别】所有区域识别失败或结果为空');
       return null;
     }
 
-    console.log(`【模板识别】完成: 卡号="${cardData.cardNumber}", 密码="${cardData.password}"`);
     return cardData;
   } catch (error) {
-    console.error('【模板识别失败】', error);
+    console.error('【模板识别失败】');
     return null;
   }
 }
@@ -166,16 +151,8 @@ async function recognizeWithCroppedImages(
 // 传统OCR识别（不使用模板）- 使用PaddleOCR识别整张图片，然后用正则提取卡号和密码
 async function recognizeTraditional(image: string): Promise<CardData[] | null> {
   try {
-    console.log('【传统OCR】开始识别整张图片...');
-
-    const startTime = Date.now();
-
     // 使用PaddleOCR识别整张图片
     const fullText = await recognizeText(image, 'grayscale');
-
-    const elapsed = Date.now() - startTime;
-    console.log(`【传统OCR】耗时: ${elapsed}ms`);
-    console.log('【识别到的文字】', fullText);
 
     // 使用正则表达式提取卡号和密码
     // 卡号：10-19位连续数字
@@ -195,10 +172,6 @@ async function recognizeTraditional(image: string): Promise<CardData[] | null> {
       return true;
     });
 
-    console.log(`【提取结果】卡号数量: ${cardNumbers.length}, 密码数量: ${filteredPasswords.length}`);
-    console.log('【提取的卡号】', cardNumbers);
-    console.log('【提取的密码】', filteredPasswords);
-
     if (cardNumbers.length === 0 && filteredPasswords.length === 0) {
       console.warn('【传统OCR】未识别到卡号或密码');
       return null;
@@ -216,11 +189,10 @@ async function recognizeTraditional(image: string): Promise<CardData[] | null> {
       });
     }
 
-    console.log(`【传统OCR】完成，识别到 ${cards.length} 张卡片`);
     return cards;
 
   } catch (error) {
-    console.error('【传统OCR失败】', error);
+    console.error('【传统OCR失败】');
     return null;
   }
 }
@@ -230,28 +202,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { image, useTemplate, croppedImages } = body;
 
-    console.log('【开始识别】');
-    console.log(`  - useTemplate: ${useTemplate}`);
-    console.log(`  - croppedImages: ${croppedImages?.length || 0} 个区域`);
-
     let result: CardData | CardData[] | null = null;
 
     // 如果使用模板且有裁剪后的图片
     if (useTemplate && croppedImages && Array.isArray(croppedImages) && croppedImages.length > 0) {
-      console.log(`【使用模板识别】模板包含 ${croppedImages.length} 个区域`);
       result = await recognizeWithCroppedImages(croppedImages);
 
       if (result) {
-        console.log(`【识别完成】成功: 1张卡片`);
         return NextResponse.json({ cards: [result] });
       }
     } else if (image) {
       // 否则使用传统OCR识别（需要完整图片）
-      console.log('【使用传统OCR识别】');
       result = await recognizeTraditional(image);
 
       if (result && result.length > 0) {
-        console.log(`【识别完成】成功: ${result.length}张卡片`);
         return NextResponse.json({ cards: result });
       }
     } else {
