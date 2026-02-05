@@ -5,6 +5,7 @@ python-multipart==0.0.6
 
 # PaddlePaddle和PaddleOCR（兼容版本）
 paddlepaddle==2.6.2
+# 使用 --no-deps 安装 paddleocr，避免自动安装 PyMuPDF 和 pdf2docx
 paddleocr==2.7.0.3
 
 # 图像处理
@@ -13,7 +14,7 @@ numpy>=1.26.0,<2.0
 opencv-python==4.6.0.66
 opencv-python-headless==4.6.0.66
 
-# PaddleOCR依赖
+# PaddleOCR核心依赖（排除 PyMuPDF 和 pdf2docx）
 shapely>=2.1.0
 scikit-image>=0.26.0
 imgaug>=0.4.0
