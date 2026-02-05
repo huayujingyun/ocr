@@ -1,0 +1,33 @@
+{
+  "name": "ocr-card-recognizer",
+  "version": "v2.1.5",
+  "platform": "windows",
+  "releaseDate": "2026-02-05",
+  "requirements": {
+    "python": "3.12",
+    "nodejs": "18+",
+    "paddlepaddle": "2.6.2",
+    "paddleocr": "2.8.0",
+    "pnpm": "8+"
+  },
+  "features": [
+    "Offline OCR recognition",
+    "Template-based recognition",
+    "Barcode recognition",
+    "Batch processing",
+    "Excel export",
+    "Real-time preview"
+  ],
+  "fixes": [
+    "PaddlePaddle version compatibility",
+    "PaddleOCR version compatibility",
+    "Windows oneDNN errors",
+    "API route mismatch",
+    "Installation scripts"
+  ],
+  "quickStart": {
+    "backend": "cd backend && install.bat",
+    "frontend": "pnpm install && pnpm run build",
+    "run": "cd backend && start-backend-fixed.bat && pnpm run start"
+  }
+}
