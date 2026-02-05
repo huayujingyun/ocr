@@ -209,11 +209,16 @@ class OCRService:
         Returns:
             识别结果列表
         """
+        logger.info(f"开始批量识别，共 {len(images)} 张图片...")
         results = []
+        success_count = 0
         for idx, image in enumerate(images):
-            logger.info(f"正在处理第 {idx + 1}/{len(images)} 张图片...")
             text = self.recognize_text(image, preprocess)
             results.append(text)
+            if text:
+                success_count += 1
+
+        logger.info(f"批量识别完成：成功 {success_count}/{len(images)} 张")
         return results
 
     def recognize_with_crop(

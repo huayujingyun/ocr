@@ -45,6 +45,12 @@ cp pnpm-lock.yaml ${PACKAGE_NAME}/
 cp .coze ${PACKAGE_NAME}/
 cp -r .cozeproj ${PACKAGE_NAME}/
 
+# Startup scripts
+echo "  - Startup scripts..."
+cp start.bat ${PACKAGE_NAME}/ 2>/dev/null || true
+cp start-silent.bat ${PACKAGE_NAME}/ 2>/dev/null || true
+cp USAGE.md ${PACKAGE_NAME}/ 2>/dev/null || true
+
 # Backend files
 echo "  - Backend files..."
 cp -r backend ${PACKAGE_NAME}/
@@ -54,10 +60,12 @@ find ${PACKAGE_NAME}/backend -type d -name "__pycache__" -exec rm -rf {} + 2>/de
 # Documentation
 echo "  - Documentation files..."
 mkdir -p ${PACKAGE_NAME}/docs
-cp README.md ${PACKAGE_NAME}/
+cp README_PACKAGING.md ${PACKAGE_NAME}/README.md 2>/dev/null || cp README.md ${PACKAGE_NAME}/
 cp QUICKSTART.md ${PACKAGE_NAME}/docs/ 2>/dev/null || true
 cp QUICKSTART_v2.1.5.md ${PACKAGE_NAME}/docs/ 2>/dev/null || true
 cp CHANGELOG_v2.1.5.md ${PACKAGE_NAME}/docs/ 2>/dev/null || true
+cp SILENT_MODE.md ${PACKAGE_NAME}/docs/ 2>/dev/null || true
+cp DOWNLOAD_v2.1.5.md ${PACKAGE_NAME}/docs/ 2>/dev/null || true
 cp WINDOWS_DEPLOY.md ${PACKAGE_NAME}/docs/ 2>/dev/null || true
 
 # Create version info file

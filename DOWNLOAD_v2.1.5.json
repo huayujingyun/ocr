@@ -1,10 +1,10 @@
 {
   "version": "v2.1.5",
-  "releaseDate": "2026-02-05T04:45:44.636Z",
-  "fileKey": "ocr-card-recognizer-windows-v2.1.5.tar_29147d39.gz",
-  "downloadUrl": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.5.tar_29147d39.gz?sign=1772858744-d99c7e391a-0-e3b1f6ed9ea5e14fa1f0ca65d5d3cb49b1302efac0aa366766a3168f8b293afc",
+  "releaseDate": "2026-02-05T05:06:16.979Z",
+  "fileKey": "ocr-card-recognizer-windows-v2.1.5.tar_09b47df1.gz",
+  "downloadUrl": "https://coze-coding-project.tos.coze.site/coze_storage_7602859016070627343/ocr-card-recognizer-windows-v2.1.5.tar_09b47df1.gz?sign=1772859976-77134fcec4-0-ddbf0a51e3b7b1a2d938a4973dd0dba7847f03f88645128175120af670f021f8",
   "fileName": "ocr-card-recognizer-windows-v2.1.5.tar.gz",
-  "fileSize": 144681,
+  "fileSize": 146446,
   "description": "OCR Card Recognizer - Windows Deployment Package with PaddlePaddle/PaddleOCR version compatibility fix",
   "changes": [
     "Fixed PaddlePaddle version compatibility (downgraded to 2.6.2)",
