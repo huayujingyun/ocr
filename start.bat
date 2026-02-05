@@ -1,12 +1,18 @@
 @echo off
 chcp 65001 > nul
 echo ==================================
-echo OCR Card Recognizer - Starting
+echo OCR Card Recognizer - Quick Start
 echo ==================================
 echo.
-echo Version: v2.1.5
-echo Platform: Windows
+echo For better performance, please use:
+echo   start-silent.bat  (Recommended - No lag)
 echo.
+echo ==================================
+echo Starting in verbose mode...
+echo (This may cause lag with many logs)
+echo ==================================
+echo.
+pause
 
 REM Get script directory
 set SCRIPT_DIR=%~dp0
@@ -39,6 +45,9 @@ echo   Frontend: http://localhost:5000
 echo.
 echo Opening browser...
 start http://localhost:5000
+echo.
+echo NOTE: This mode may cause lag with many logs.
+echo For better performance, close this and use start-silent.bat
 echo.
 echo Press any key to close this window...
 echo (Services will continue running in their own windows)
