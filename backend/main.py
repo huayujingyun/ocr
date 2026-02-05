@@ -3,6 +3,10 @@ FastAPI后端服务 - 集成PaddleOCR-VL-1.5
 提供OCR识别API接口
 """
 
+import os
+# 禁用oneDNN以避免兼容性问题
+os.environ['USE_ONEDNN'] = '0'
+
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
